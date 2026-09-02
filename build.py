@@ -116,6 +116,15 @@ def add_csv_to_deck(deck, model, csv_filename, has_card_type=False):
     return count
 
 DECK_CONFIGS = {
+    'linux': {
+        'id': 2059400120,
+        'name': 'Linux Mastery',
+        'output': 'Linux_Mastery.apkg',
+        'model_id': 1607392328,
+        'model_name': 'Linux Mastery Model',
+        'files': [('linux_mastery_deck.csv', False)],
+        'desc': 'Practical CLI, Systemd, Networking, Performance Triage, Storage & LVM (125 Cards)'
+    },
     'vertica': {
         'id': 2059400118,
         'name': 'Vertica 80/20 Mastery',
