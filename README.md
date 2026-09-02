@@ -52,8 +52,8 @@ anki_cs_it_decks/
 | Deck Name | Package File (`packages/`) | Source CSV (`decks/`) | Card Count | Key Domains |
 | :--- | :--- | :--- | :---: | :--- |
 | **Linux Mastery** | `Linux_Mastery.apkg` | `linux_mastery_deck.csv` | **185** | Practical CLI, Deep Search, Systemd, Bash Scripting strict mode, SSH Tunnels, Git CLI, Triage (`vmstat`/`iostat`/`lsof`), Storage, LVM & Kernel Tuning |
-| **DBA Fresher Foundations** | `DBA_Fresher_Mastery.apkg` | `dba_fresher_deck.csv` | **200** | Engine Internals (8KB pages, Shared Buffers, WAL, Checkpoints), ACID, Lock trees, Outage Playbooks, Extensions (`pg_stat_statements`/`pg_repack`), Linux Tools |
-| **SQL & Query Optimization** | `SQL_Optimization_Mastery.apkg` | `sql_tuning_deck.csv` | **185** | Window Functions, Recursive CTEs, LeetCode Hard Patterns, Joins/Anti-Patterns, JSONB Path, SARGability, EXPLAIN Forensics, Index Tuning |
+| **DBA Fresher Foundations** | `DBA_Fresher_Mastery.apkg` | `dba_fresher_deck.csv` | **120** | Engine Internals (8KB pages, Shared Buffers, WAL, Checkpoints), ACID, Lock trees, Outage Playbooks, Extensions (`pg_stat_statements`/`pg_repack`), Replication |
+| **SQL & Query Optimization** | `SQL_Optimization_Mastery.apkg` | `sql_tuning_deck.csv` | **170** | Window Functions, Recursive CTEs, LeetCode Hard Patterns, Joins/Anti-Patterns, JSONB Path, SARGability, EXPLAIN Forensics, Index Tuning |
 | **EDB Postgres Mastery** | `EDB_Postgres_Mastery.apkg` | `edb_postgres_deck.csv` | **250** | Architecture, Memory Sizing, TDE, PEM, HA, PITR, HOT Updates, `pg_upgrade --link`, EDB SPL & Security |
 | **Vertica 80/20 Mastery** | `Vertica_Mastery.apkg` | `vertica_deck.csv` | **120** | Columnar Architecture, Projections, Hash vs Unsegmented, Eon Mode & Depots, Tuple Mover, K-Safety, Resource Pools |
 | **Data Analyst Mastery** | `Analyst_Mastery.apkg` | `fundamental_analyst_deck.csv` | **140** | PostgreSQL for Analytics, Python Core, ML Validation, Dialect Differences |
@@ -62,7 +62,7 @@ anki_cs_it_decks/
 | **Networking & OOPs Mastery** | `Networking_OOPs_Mastery.apkg` | `fundamentals_networking.csv`<br>`fundamentals_oops.csv` | **120** | TCP/IP, DNS, HTTP/S, Subnetting, Polymorphism, Design Patterns, SOLID |
 | **OS & System Design Mastery** | `OS_SysDesign_Mastery.apkg` | `fundamentals_os.csv`<br>`fundamentals_system_design.csv` | **120** | Linux Kernel, Process Scheduling, Virtual Memory, CAP Theorem, Sharding, Caches |
 
-**Total Cards Across All Decks:** **1,492 Cards**
+**Total Cards Across All Decks:** **1,397 Cards** (Golden Trio: **475 Cards**)
 
 ---
 
@@ -78,8 +78,8 @@ python build.py
 ### Build a Specific Deck
 ```bash
 python build.py linux         # Builds Linux Mastery (185 cards)
-python build.py dba_fresher   # Builds DBA Fresher Foundations (200 cards)
-python build.py sql_tuning    # Builds SQL & Query Optimization Mastery (185 cards)
+python build.py dba_fresher   # Builds DBA Fresher Foundations (120 cards)
+python build.py sql_tuning    # Builds SQL & Query Optimization Mastery (170 cards)
 python build.py edb           # Builds EDB Postgres Mastery (250 cards)
 python build.py vertica       # Builds Vertica 80/20 Mastery (120 cards)
 python build.py analyst       # Builds Data Analyst Mastery

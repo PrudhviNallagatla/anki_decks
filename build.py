@@ -150,7 +150,7 @@ DECK_CONFIGS = {
         'model_id': 1607392322,
         'model_name': 'DBA Fresher Model',
         'files': [('dba_fresher_deck.csv', False)],
-        'desc': 'PostgreSQL & RDBMS Junior DBA Foundations, Outages, Extensions & Playbook (200 Cards)'
+        'desc': 'PostgreSQL & RDBMS Junior DBA Foundations, Outages, Extensions & Playbook (120 Cards)'
     },
     'sql_tuning': {
         'id': 2059400119,
@@ -159,7 +159,7 @@ DECK_CONFIGS = {
         'model_id': 1607392327,
         'model_name': 'SQL Optimization Model',
         'files': [('sql_tuning_deck.csv', False)],
-        'desc': 'Advanced Window Functions, CTEs, SARGability, JSONB, LeetCode Hard & EXPLAIN Forensics (185 Cards)'
+        'desc': 'Advanced Window Functions, CTEs, SARGability, JSONB, LeetCode Hard & EXPLAIN Forensics (170 Cards)'
     },
     'analyst': {
         'id': 2059400115,
