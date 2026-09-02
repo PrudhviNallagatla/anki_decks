@@ -1,0 +1,472 @@
+Source PDF: EDB Postgres AI Database Essentials v17_Student_144dpi_75%.pdf
+Pages: 201 to 250
+========================================
+
+Transparent Data Encryption
+ Transparent Data Encryption was introduced in Enterprise Postgres version 15
+ Helps securing user data by encrypting data files, write-ahead logs and
+temporary files
+ TDE is transparent to user and doesn’t require any application-level change
+ With TDE, Database Server and backup storage files are unintelligible for
+unauthorized users
+ Does not encrypt transaction status metadata, data directory structure, foreign
+tables, logs and configuration files
+ You need to create a new TDE-enabled instance / cluster at “initdb” time or
+migrate your database to an existing TDE-enabled environment
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Level Encryption
+ Encrypting everything does not make data secure
+ Resources are consumed when you query encrypted data
+ pgcrypto provides mechanism for encrypting selected columns
+ pgcrypto supports one-way and two-way data encryption
+ Install pgcrypto using CREATE EXTENSION command
+CREATE EXTENSION pgcrypto;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+SQL/PROTECT – Track, Warn and Protect
+SQL firewall Screens incoming
+Centrally managed
+installed directly in queries for common
+layer of security
+the database server attack profiles
+Threat
+Deleted
+SQL/
+Injection
+Protect
+Attack
+Attacker
+Report
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Data Redaction
+Stored Data Redacted Display
+ Data Redaction can be used to
+conceal data values from
+selected users FULL 10/09/1992 01/01/2001
+ The redaction function is
+incorporated into redaction policy
+PARTIAL 987-65-4328 XXX-XX-4328
+using CREATE REDACTION
+POLICY
+RED/EXP
+First.last@example.com [hidden]@example.com
+ Data Redaction is controlled by
+edb_data_redaction
+configuration parameter
+RANDOM
+510510510510510510 401288888888881881
+ Useful for compliance to GDPR,
+PCI and HIPAA standards
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+EDB*Wrap – Protects Your Code
+ Safeguards sensitive code from
+prying eyes inside your firewall
+ Protects critical algorithms,
+processes, seed values and more
+ Restricts access to intellectual
+property on customer sites
+ Additional layer of security
+beyond standard user ACLs
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+General Security
+Recommendations
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+General Recommendations - Database Server
+ Always keep your system patched to the latest version
+ Don't put a postmaster port on the Internet
+ Firewall this port appropriately
+ If that's not possible, make a read-only Replica database available on the port, not
+a R/W master
+ Isolate the database port from other network traffic
+ Don't rely solely on your front-end application to prevent unauthorized
+access to your database
+ Avoid using trust authentication in pg_hba.conf
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+General Recommendations - Database Users
+ Provide each user with their own login
+ Shared credentials make auditing more complicated and violate HIPAA, PCI, etc.
+ Allow users the minimum access to do their jobs
+ Use Roles and classes of privileges
+ Use Views and View Security Barriers
+ Use Row Level Security
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+General Recommendations - Connection Pooling
+ When not practical to provide each user with their own login
+(i.e. connection pooling is in use):
+ Have one or more logins related to the application
+ Limit access to the database by the specific IP addresses where the
+application is certified to run
+ Ensure the login(s) have minimum rights needed to do their work (e.g.
+SELECT rights and only to specified tables)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+General Recommendations - Database Superuser
+ Only allow the database superuser to log in from the server machine
+itself, with local or localhost connection
+ Reserve use of superuser accounts for tasks or roles where it is
+absolutely required
+ Make as few objects owned by the superuser as necessary
+ Restrict access to configuration files (postgresql.conf and pg_hba.conf)
+and error log files to administrators
+ Disallow host system login by database superuser roles ('postgres‘)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+General Recommendations - Database Superuser (continued)
+ Do not allow superuser to log into database server OS. Use personal OS login
+and then “sudo” to create an audit trail
+ Use a separate database login to own each database and own everything in it
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+General Recommendations - Database Backups
+ Keep backups and have a tested recovery plan. No matter how well you
+secure things, it's still possible an intruder could get in and delete or modify
+your data
+ Have scripts perform backups and immediately test them and alert DBA on
+any failures
+ Keep backups physically separate from the database server. A disaster can
+strike and take out an entire location, whether that’s environmental (e.g.
+earthquake), malicious (e.g. hacker, insider), or human error
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+General Recommendations - Think AAA
+Authenticate Authorize Audit
+Verify the user is Verify the user is Record which
+who she claims allowed access user did what and
+to be when they did it
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ Database Security Requirements and Protection Plan
+ Levels of Security in Postgres
+ Access Control using pg_hba.conf
+ Introduction to Row Level Security
+ Data Encryption
+ Advanced Features - Data Redaction, SQL/Protect and EDB*Wrap
+ General Security Recommendations
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 1
+ You are working as an Enterprise Postgres DBA. Your server box has 2 network
+cards with ip addresses 192.168.30.10 and 10.4.2.10. 192.168.30.10 is used for
+the internal LAN and 10.4.2.10 is used by the web server to connect users from
+an external network. Your server should accept TCP/IP connections both from
+internal and external users.
+ Configure your server to accept connections from external and internal networks.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 2
+1. You are working as an Enterprise Postgres DBA. A developer showed you the
+following error:
+psql: could not connect to server: Connection refused
+(0x0000274D/10061)
+ Is the server running on host 192.168.30.22 and accepting TCP/IP connections on port 5444?
+2. Diagnose the problem and suggest the solution
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 3
+ A new developer has joined the team
+with ID number 89
+ Create a new user by name dev89 and
+password password89
+ Then assign the necessary privileges to
+dev89 so they can connect to the
+edbstore database and view all tables
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Lab Exercise - 4
+ A new developer joins e-music
+corp. They have an ip address
+192.168.30.89. They are not able
+to connect from their machine to
+the Enterprise Postgres and gets
+the following error on the server:
+FATAL: no pg_hba.conf entry
+for host “192.168.30.89", user
+“dev89", database “edbstore",
+SSL off
+ Configure your server so that the
+new developer can connect from
+their machine
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Monitoring and
+Admin Tools
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ Overview and Features of Postgres Enterprise Manager
+ Access Postgres Enterprise Manager Client
+ Register and Connect to a Database Server
+ General Database Administration
+ Object Browser - View Data, Query Tool, Server Status
+ Overview of pgAdmin
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Postgres Enterprise Manager
+Manage, monitor, and tune Postgres at scale
+Manage from one Optimize database Monitor system Integrate with
+interface performance health other tools
+One place to visualize In-depth diagnostics Built-in dashboards APIs and webhooks
+and manage for database reports and customizable to fetch data, send
+everything and tuning alert thresholds alerts, and manage
+servers
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM - Features
+Manage, Monitor and Tune PostgreSQL and Enterprise Postgres running on multiple Platforms
+Management Monitoring Tuning
+ Integrated SQL IDE  Customizable charts and  Detailed performance
+dashboards diagnostics
+ Built-in query debugger
+ Predefined and custom alerts  SQL profiler
+ User/group access
+via email or SNMP
+management  Capacity management
+ User-defined metrics log
+ Schema Diff  Log manager
+analysis
+ Session profiling  Expert wizards for
+ Database and OS level
+configuration setup
+ Job scheduling
+monitoring
+ Backup and failover
+ Web hooks and REST API for
+management
+integrations
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Architecture
+PEM Web Application
+Management
+PostgreSQL EPAS
+Only
+HTTPD
+Monitoring PostgreSQL
+PEM Agent PEM Agent
+Data
+Managed Host Machine
+Client(Browser)
+Monitoring
+EPAS
+Data
+EPAS
+PEM Storage
+(Backend Database: pem)
+Monitoring
+PEM Agent
+Data
+Remote
+Managed Host Machine
+Monitoring Unmanaged Hosts
+PEM Server Host Machine Managed Hosts
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Install and Configure PEM
+ PEM Server can be installed using RPM or yum package manager :
+dnf install edb-pem
+ After installation, PEM Server can be configured using configure-
+pem-server.sh script file
+/usr/edb/pem/bin/configure-pem-server.sh
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Open Postgres Enterprise Manager Client
+ Postgres Enterprise
+Manager (PEM) Client can
+be run using a supported
+web browser on your OS
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Client First Look
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Register a Database Cluster
+ Go to PEM Server Directory
+ Right Click on PEM Enterprise Manager Server and select Create Server
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Common Connection Problems
+ There are 2 common error messages encountered when connecting to an
+Enterprise Postgres database:
+ Could not connect to Server - Connection refused
+ This error occurs when either the database server isn't running OR the server isn't
+configured to accept external TCP/IP connections
+ httpd service not running
+ FATAL - no pg_hba.conf entry
+ This means your server can be contacted over the network but is not configured to accept
+the connection. Your client is not detected as a legal user for the database. You will have to
+add an entry for each of your clients to the pg_hba.conf file
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Changing a Server’s Registration
+ Right-click on a server entry to modify its
+properties
+ Click on the Remove Server to remove a
+server’s entry
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Viewing Data
+ Expand Databases  Schemas  Tables
+ Right-click on a table
+ Select View Data
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Filtering and Sorting Data
+Filter/Sort Data
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Query Tool
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Databases
+ Create a new database or run a
+report on the databases in a cluster with the
+databases menu
+ Perform the following option with an
+individual database menu:
+ Create a new object in the database
+ Drop the database
+ Open the Query Tool with a script to re-create
+the database
+ Run reports
+ Perform maintenance
+ Backup or Restore
+ Modify the databases properties
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Schemas
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Tables
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Tables - Maintenance
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Tablespaces
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Roles
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Server Status
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Overview of pgAdmin
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Introduction to pgAdmin
+Download and Install:
+ Open-source graphical user
+https://www.pgadmin.org/download/
+interface for Postgres
+ Create, manage and maintain
+database objects
+ pgAdmin is web based and
+requires Apache HTTP server
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pgAdmin Features
+Supports Multi-deployment
+Multi-platform PostgreSQL and Mode – Desktop, Integrated SQL IDE
+Enterprise Postgres Server
+Perform
+pl/pgsql and edb-spl Maintenance Tasks-
+Schema Diff Tool ERD Tool
+Debugger Vacuum, Backups,
+Restore etc.
+Multibyte server-side
+Job Scheduler
+encoding support
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+First Look - pgAdmin
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ Overview and Features of Postgres Enterprise Manager
+ Access Postgres Enterprise Manager Client
+ Register and Connect to a Database Server
+ General Database Administration
+ Object Browser - View Data, Query Tool, Server Status
+ Overview of pgAdmin
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+SQL Primer
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ Data Types  Domains
+ Structured Query Language (SQL)  SQL Joins and Functions
+ DDL, DML and DCL Statements  Explain Plans
+ Transaction Control Statements  Quoting in PostgreSQL
+ Tables and Constraints  Indexes
+ Views and Materialized Views  Oracle Compatibility and Tools
+ Sequences
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Data Types
+Common Data Types:
+Date/Time Advanced
+Numeric Types Character Types Other Types
+Types Server
+BYTEA CLOB
+TIMESTAMP
+NUMERIC CHAR
+BOOL
+BLOB
+DATE
+MONEY
+INTEGER VARCHAR VARCHAR2
+XML
+TIME
+NUMBER
+JSON
+SERIAL TEXT
+INTERVAL
+JSONB XMLTYPE
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Oracle Compatible Data Types
+The built-in general-purpose data types:
+BFILE BLOB BOOLEAN CHAR CLOB DATE
+DOUBLE BINARY VARBINARY INTEGER NUMBER TIMESTAMP
+VARCHAR2 NVARCHAR2 ROWID INTERVAL XML
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Structured Query Language
+Data Definition Data Manipulation Transaction Control
+Data Control Language
+Language Language Language
+CREATE COMMIT
+INSERT
+GRANT
+ALTER ROLLBACK
+UPDATE
+DROP SAVEPOINT
+REVOKE
+DELETE
+TRUNCATE SET TRANSACTION
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+DDL Statements
+Statement Syntax
+CREATE [TEMPORARY][UNLOGGED] TABLE table_name
+( [column_name data_type [ column_constraint] )
+[ INHERITS ( parent_table) ]
+CREATE TABLE
+[ TABLESPACE tablespace_name ]
+[ USING INDEX TABLESPACE tablespace_name ]
+[ PARTITION BY { RANGE | LIST | HASH } (column_name|( expression) ]
+ALTER TABLE ALTER TABLE [IF EXISTS] [ONLY] name [*] action [,…]
+DROP TABLE DROP TABLE [ IF EXISTS ] name [, …] [ CASCADE | RESTRICT ]
+TRUNCATE TABLE TRUNCATE [ TABLE ] [ ONLY ] name [ * ] [, ….]
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+

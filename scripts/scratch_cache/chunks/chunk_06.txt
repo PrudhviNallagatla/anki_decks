@@ -1,0 +1,534 @@
+Source PDF: EDB Postgres AI Database Advanced v17_Student_144dpi_75%.pdf
+Pages: 201 to 250
+========================================
+
+Default Script
+BEGIN;
+UPDATE pgbench_accounts SET abalance = abalance + :delta WHERE aid = :aid;
+SELECT abalance FROM pgbench_accounts WHERE aid = :aid;
+UPDATE pgbench_tellers SET tbalance = tbalance + :delta WHERE tid = :tid;
+UPDATE pgbench_branches SET bbalance = bbalance + :delta WHERE bid = :bid;
+INSERT INTO pgbench_history (tid, bid, aid, delta, mtime) VALUES (:tid, :bid,
+:aid, :delta, CURRENT_TIMESTAMP);
+END;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - pgbench
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Extensions
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Module Objectives
+ What are Extension modules?
+ Installing Extension Modules
+ Add Extension to a Database
+ Extensions List
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+What are Extension Modules?
+ Additional Supplied Modules found in the “extension” directory provides
+additional functionalities
+ Extensions are not included in the core database and may be still under
+development
+ Extensions are also tied to that particular version of Postgres
+ They are part of contrib package and can be installed using
+ “dnf install edb-asXX-server-contrib”
+ Package installer places extensions in directory:
+/usr/edb/asXX/share/extension/
+205
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+205
+
+Add Extension to a Database
+ You need to register the new objects in the database system by running the
+CREATE EXTENSION command
+ Alternatively, run it in database template1 so that the module will be copied into
+subsequently-created databases by default
+ Syntax:
+=# CREATE EXTENSION module_name;
+ This command must be run by a database superuser
+206
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+206
+
+Available Extensions
+ adminpack - File and log manipulation routines, used by pgAdmin
+ btree_gist - Support for emulating B-Tree indexing in GiST
+ cube - Multidimensional-cube datatype (GiST indexing example)
+ dblink - Allows remote query execution
+ earthdistance - Operator for computing Earth distance for two points
+ fuzzystrmatch - Levenshtein, metaphone, and soundex fuzzy string matching
+ hstore - Module for storing (key,value) pairs
+ pg_visibility – To examine the visibility map and page-level visibility info
+ bloom – Provides an index access method based on bloom filters
+207
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+207
+
+Available Extensions(Continued)
+ intagg - Integer aggregator
+ intarray - Index support for arrays of int4, using GiST
+ isn - Postgres type extensions for ISBN, ISSN, ISMN, EAN13 product numbers
+ lo - Large Object maintenance
+ ltree – Adds ltree data type for storing hierarchical tree-like structure
+ pg_buffercache - Real time queries on the shared buffer cache
+ pg_freespacemap - Displays the contents of the free space map (FSM)
+ pgcrypto - Cryptographic functions
+208
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+208
+
+Available Extensions (Continued)
+ pg_trgm - Functions for determining the similarity of text based on trigram matching
+ pgrowlocks - A function to return row locking information
+ pgstattuple - A function to return statistics about "dead" tuples and free space within a table
+ seg - Confidence-interval datatype (GiST indexing example)
+ spi - Various trigger functions, examples for using SPI
+ sslinfo - Functions to get information about SSL certificate
+ uuid-ossp – Provide functions to generate UUIDs
+ edb_job_schedular – EDB Job is an extension that runsScheduler the job scheduler as a
+background process for the DBMS_SCHEDULER and DBMS_ JOB packages.
+209
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+209
+
+EDB Job Scheduler
+Configure and Setup Job Scheduler
+ EDB Job Scheduler eliminates the
+requirement of pgAgent for
+DBMS_SCHEDULER and DBMS_JOB Parameters changes in postgresql.conf:
+edb_job_scheduler.database_list = 'edb'
+ EDB Job Scheduler is an extension
+that runs as a background process shared_preload_libraries='$libdir/edb_job_schedu
+ler’
+residing in the
+contrib/dbms_scheduler_ext Restart the database cluster
+subdirectory
+Connect with edb database and execute:
+ Components:
+CREATE EXTENSION edb_job_scheduler;
+ Launcher process
+Catalog Table for Monitoring:
+ Scheduler process
+sys.jobs
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 1
+ In this lab, you will be working with
+a Postgres extension to enhance
+the functionality of your database.
+1. Install and configure extension named
+hstore in edbstore database
+2. Perform a basic test or use case that
+demonstrates the functionality
+provided by the extension
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Table Partitioning
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Module Objectives
+ Partitioning Benefits
+ Partitioning Methods and Syntax
+ Partition Pruning
+ Adding New Partitioned Table
+ Partitioning an Existing Table
+ Moving and Dropping a Partition
+ Handling Stray Values
+ Information Views
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Partitioning
+ Partitioning refers to splitting what is logically one large table into smaller
+physical pieces
+ Query performance can be improved dramatically for certain kinds of queries
+ Improved UPDATE performance. When an index no longer fits easily in
+memory, both read and write operations on the index take progressively
+more disk accesses
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Partitioning Benefits
+ Partitioning is useful for large tables especially when a table is bigger than physical
+memory
+ Can be used when different storage devices must be used for single table
+ Seldom-used data can be migrated to cheaper and slower storage media
+ Bulk loads or deletes may be accomplished by simply adding or removing one of the
+partitions
+ Partitioning avoids VACUUM overhead caused by a bulk DELETE
+ Dramatic performance improvements for certain kinds of queries
+ Improved UPDATE performance
+ Index operations takes less time
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+When to Partition - Suggestions
+ Here are some suggestions for when to partition:
+ When a large table begins having performance issues
+ Size of the table has exceeded the physical memory
+ Tables greater than 20GB may be considered for table partitioning
+ Tables containing historical data where the newest data can be added to a new partition
+ A typical example is where 1 month of data is frequently updated and 11 months of data is read only
+ When the content of a table needs to be distributed on different storage devices depending on
+the usage of data
+ When queries only need to access a subset of data
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Partitioning Methods
+ Enterprise Postgres supports three types of partitioning methods:
+List Partitioning RangePartitioning Hash Partitioning
+East Sales Region January and h1
+February
+New York
+Virginia
+h2
+Florida
+March and April
+West Sales Region
+California h3
+Oregon
+May and June
+Hawaii
+h4
+Central Sales Region
+Illinois July and
+August
+Texas
+Missouri
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Partitioning Syntax
+=# CREATE TABLE [schema.]table_name
+table_definition
+PARTITION BY LIST|RANGE|HASH(column)
+[INTERVAL (constant | expression)] – ONLY FOR RANGE PARTITION
+[SUBPARTITION BY {RANGE|LIST|HASH(column[, column ]...)]
+(list_partition_definition[, list_partition_definition]...);
+Where list_partition_definition is:
+PARTITION [partition_name]
+VALUES (value[, value]...) –NO VALUES FOR HASH PARTITION
+[TABLESPACE tablespace_name]
+[(subpartition, ...)]
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Attach and Detach Partitions
+ A table can be added or attached as a partition to a partitioned table that exists
+ An existing partition can be converted into a standalone table
+ Example:
+ ALTER TABLE users ATTACH PARTITION users_3 from (101) to (150);
+ ALTER TABLE users DETACH PARTITION users_3;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Partition Pruning
+ Query planner uses partition pruning to compute an efficient plan
+ Query filter must use a partitioned column
+ In a LIST partitioned table partition pruning is effective when the WHERE clause has
+equal(=) or AND operator
+ In a RANGE partitioned table partition pruning is effective when the WHERE clause has
+=,< or > operators
+ In a HASH partitioned table partition pruning is effective when the WHERE clause has
+equal(=) operator
+ Partition pruning on Boolean columns
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Fast Pruning
+ Fast pruning occurs early in the planning process
+ Only works on queries with WHERE or JOIN clauses
+ Controlled by a parameter named edb_enable_pruning
+ Reduces the number of partitions that the planner must consider
+ Doesn’t work on sub-partitioned tables or RANGE partitions partitioned on more
+than one column
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Constraint Exclusion
+ Constraint exclusion is like partition pruning except that it uses each table’s
+check constraint
+ Constraints defined for each partition are examined
+ Controlled by the constraint_exclusion parameter which must be set to
+either partition or on
+ Constraint exclusion only works when the query's WHERE clause contains
+constants or parameters
+ It does not work if where clause is using any non-immutable function e.g
+current_timestamp()
+ All constraints on all children of the parent table are examined
+ Exclusion constraints support to prevent conflicting data in different partitions
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Listing Partitioned Tables
+ ALL_TAB_PARTITIONS
+ Provides partition-level partitioning information for current user
+ ALL_TAB_SUBPARTITIONS
+ Describes sub-partitions accessible to the current user for all tables
+ \dP meta command to list partitioned tables and indexes
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Adding A New Partitioned Table
+ Use the ALTER TABLE… ADD PARTITION command to add a partition to an
+existing partitioned table
+ The new partition must be of the same type
+ Syntax:
+=# ALTER TABLE table_name ADD PARTITION partition_definition;
+Where partition_definition is
+{list_partition | range_partition }
+ Example:
+=# ALTER TABLE sales ADD PARTITION east_asia VALUES ('CHINA', 'KOREA');
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Partitioning An Existing Table
+ The ALTER TABLE…EXCHANGE PARTITION command swaps an existing
+table with a partition or sub-partition
+ Syntax of the EXCHANGE PARTITION command:
+=# ALTER TABLE target_table
+EXCHANGE PARTITION|SUBPARTITION target_partition|
+target_subpartition
+WITH TABLE source_table [(WITH | WITHOUT) VALIDATION];
+ Preparing a new partition is resource intensive
+ Load the data into a staging table and use EXCHANGE PARTITION
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Move A Partition
+ Use the ALTER TABLE… MOVE PARTITION command to move a partition or
+sub-partition to a different tablespace
+ Syntax:
+=# ALTER TABLE table_name
+MOVE PARTITION partition_name
+TABLESPACE tablespace_name;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Drop A Partition
+ Use the ALTER TABLE… DROP PARTITION command to delete a partition
+and the data stored in that partition
+ Syntax:
+ALTER TABLE table_name DROP PARTITION partition_name;
+ The following example deletes the partition, americas from the sales table:
+ALTER TABLE sales DROP PARTITION americas;
+228
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Dropping and Truncating
+ A DROP or TRUNCATE on base table will DROP or TRUNCATE all the partitions
+ Use the ALTER TABLE… DROP PARTITION command instead
+ Use ALTER TABLE….TRUNCATE PARTITION command instead
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Handling Stray Values
+ Stray values are rows that do not meet any partitioning rules
+ A DEFAULT or MAXVALUE partition or sub-partition can be used
+to capture such rows
+ The syntax of a DEFAULT rule is:
+PARTITION [partition_name] VALUES (DEFAULT)
+ The syntax of a MAXVALUE rule is:
+PARTITION [partition_name] VALUES LESS THAN (MAXVALUE)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Information Views
+ ALL_PART_TABLES
+ ALL_TAB_PARTITIONS
+ ALL_TAB_SUBPARTITIONS
+ ALL_PART_KEY_COLUMNS
+ ALL_SUBPART_KEY_COLUMNS
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 1
+ View the structure of orders table in edbstore database
+ Partition existing orders table as shown in following diagram:
+ORDERS
+Orderid orderdate customerid netamount tax totalamount
+orderid orderid
+(1-6000) (6001-12000)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 2
+ Create primary key on orderid column of each partitioned table
+ View the execution plan of following query
+SELECT * FROM orders WHERE orderid=3000;
+ Turn off the constraint_exclusion and view execution plan
+of following query
+SELECT * FROM orders WHERE orderid=3000;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Connection Pooling
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Module Objectives
+ Connection Pooling Overview
+ pgpool-II - Features
+ pgpool II - Installation and
+Configuration
+ Starting/Stopping pgpool-II
+ pgbouncer - Features
+ pgbouncer - Installation and
+Configuration
+ Starting/Stopping pgbouncer
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Connection Pooling
+ Each database client acquires a database connection from the database
+ The Postmaster is responsible for listening and providing database connections
+ Connection processes are destroyed once the clients log off
+ Connection pooling:
+ Provides a mechanism to reuse the existing connection processes once the clients log off
+ Lowers connection overhead on the postmaster
+ Improves application database access performance
+ Spreads connection cost over repeated clients
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pgpool-II
+ Open source
+ Middleware between PostgreSQL servers and a
+PostgreSQL database client
+ pgpool-II talks to PostgreSQL backend and frontend
+protocol, and relays a connection between them
+ Features:
+ Connection Pooling
+ Replication
+ Load Balancing
+ Automatic Failover
+ Parallel Query
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pgpool-II Connection Pooling
+ It saves connections to the PostgreSQL servers
+ It will reuse connections whenever a new connection request with the same
+properties (i.e. username, database, protocol version) is received
+ It reduces connection overhead, and improves system's overall throughput
+ Provides cluster-based connection pooling
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Load Balancing Reads
+ If a database is replicated, executing a SELECT query on any server will return
+the same result
+ pgpool-II automatically detects SELECT and can load balance reads among
+multiple servers, improving the system's overall throughput
+ It works best in a situation where there are a lot of users executing many
+queries at the same time
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pgpool-II Installation
+ It works on Linux, Solaris, FreeBSD, and most of the UNIX-like architectures
+ root or sudo user access is required for installation
+ It can be installed using packages available from repos.enterprisedb.com
+Install Check Version Config Files pgpool Service
+dnf install –y edb- pgpool –version /etc/sysconfig/edb/ edb-pgpool-4.5
+pgpool45 pgpool4.5/
+pgpool.conf
+pcp.conf
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Configuring pgpool-II
+ Each operation mode has specific configuration parameters in pgpool.conf
+ After installing pgpool-II, pgpool.conf.sample is created
+$ cp /etc/sysconfig/edb/pgpool4.5/pgpool.conf.sample
+/etc/sysconfig/edb/pgpool4.5/pgpool.conf
+ There are additional sample pgpool.conf file for each mode
+pgpool.conf.sample-replication
+pgpool.conf.sample-master-slave
+pgpool.conf.sample-stream
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pgpool.conf parameters
+listen_addresses, port, pcp_port
+Connections
+num_init_children, child_life_time, child_max_connections, client_idle_limit, enable_pool_hba, pool_passwd
+Pools
+Logs log_destination, log_connections, log_statement
+pid_file_name, logdir
+File Location
+Failovers failover_command, failback_command, follow_master_command
+replication_mode, master_slave_sub, load_balance_mode, replicate_select
+Load Balancing
+Backends backend_hostname, backend_port, backend_weight, backend_data_directory, backend_flag
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Configuring pcp.conf
+ pgpool-II provides a control interface for its administration
+ pcp.conf is the user/password file for authentication with this interface
+ After installing pgpool-II,
+/etc/sysconfig/edb/pgpool4.5/pcp.conf.sample is created
+$ cp /etc/sysconfig/edb/pgpool4.5/pcp.conf.sample
+/etc/sysconfig/edb/pgpool4.5/pcp.conf
+ Password can be produced with the /usr/edb/pgpool4.5/bin/pg_md5
+command:
+$ /usr/edb/pgpool4.5/bin/pg_md5 -p
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Starting/Stopping pgpool-II
+ All the backend database clusters must be started before starting pgpool-II
+ edb-pgpool-4.5 service is created to start / stop or check status of pgpool-II
+ Syntax:
+$ systemctl [ start | stop | status ] edb-pgpool-4.5
+244
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Connecting via pgpool-II
+ pgpool-II relay connections between client and Postgres server
+ Client connects to pgpool-II as if it is connecting to Postgres
+ Connections are only possible to a database of a configured database cluster
+ Connection using psql example:
+[enterprisedb@localhost ~]$ psql -p 9999 -d edb -U enterprisedb
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pgbouncer - "Bouncer is always right“
+ Lightweight connection pooler for Enterprise Postgres
+ Any application can connect to pgbouncer as it
+connects with Enterprise Postgres
+ It can help to reduce the connection impact on the
+Enterprise Postgres
+ It provides connection pooling(reuse) of the existing
+connections
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pgbouncer Features
+ It has low memory requirements (2k per connection by default)
+ It is a database-based pooler that can connect to a database from different
+clusters
+ Not tied to one backend server
+ Supports online restart/upgrade without dropping client connections
+ Supports Windows and Linux platforms
+ Bundled in StackBuilder Plus for Windows and also available as package from
+repos.enterprisedb.com
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Types of Connections
+ pgbouncer supports several types of pooling when rotating connections:
+ Session pooling
+ A server connection is assigned to the client application for the life of the client connection
+ This is the default
+ Transaction pooling
+ A server connection is assigned to the client application for the duration of a transaction
+ Statement pooling
+ A server connection is assigned to the client application for each statement
+248
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+How Connections are Established
+ An application connects to pgbouncer as if it were a Postgres database
+ pgbouncer then creates a connection to the actual database server, or it reuses one of the
+existing connections from the pool
+ Step 1 - The client application attempts to connect to Postgres on the port where pgbouncer is running
+ Step 2 - The database name supplied by the client application must match with the list in pgbouncer.ini
+ Step 3 - The username and password supplied must match with the list in users.txt
+ Step 4 - If a connection with the same settings is available in the pool it will be assigned to the client
+otherwise a new connection object will be created
+ Step 5 - Once the client logs off the connection object returns back to the pool
+249
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Setting Up pgbouncer
+ Create a pgbouncer.ini file:
+[databases] db1 = host=127.0.0.1 port=5444 dbname=db1
+[pgbouncer] listen_port = 6432, listen_addr = 127.0.0.1, auth_type =
+md5, auth_file = users.txt, logfile = pgbouncer.log, pidfile =
+pgbouncer.pid, admin_users = someuser
+ Create a users.txt file:
+"someuser" "same_password_as_in_server"
+ Launch pgbouncer:
+$ pgbouncer -d pgbouncer.ini
+ Have your application (or the psql client) connect to pgbouncer instead of
+directly to the Postgres server:
+$ psql -p 6432 -U someuser template1
+250
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+

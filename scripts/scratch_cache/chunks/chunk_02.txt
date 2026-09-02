@@ -1,0 +1,640 @@
+Source PDF: EDB Postgres AI Database Advanced v17_Student_144dpi_75%.pdf
+Pages: 1 to 50
+========================================
+
+EDB Postgres AI
+Database Advanced v17
+©©©EEEDDDBBB 222000222455 ——— AAALLLLLL RRRIIIGGGHHHTTTSSS RRREEESSSEEERRRVVVEEEDDD...
+
+Course Agenda
+ Introduction  Table Partitioning
+ Database Monitoring  Connection Pooling
+ SQL Tuning  Cloning
+ Performance Tuning  Transparent Data Encryption
+ Benchmarking  Upgrading Best Practices
+ Extensions
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Introduction
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Module Objectives
+ EDB Postgres AI Platform
+ Facts about PostgreSQL and
+Enterprise Postgres
+ Lab Setup - Prepare a Sample
+Database
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Operate Efficiently Innovate Faster
+Cloud agility in any environment Accelerated time-to-market
+▪ ▪
+Unified management boosts Secure open source flexibility
+▪ ▪
+productivity 30% AI-driven assistance and
+▪
+90% better value than cloud automation
+▪
+databases
+EDB Postgres AI
+Lead Your Market Grow Revenue
+Fastest path to launching AI Always-on applications
+▪ ▪
+applications with up to 99.999% HA
+Competitive edge Business growth
+▪ ▪
+Ethical AI practices Customer experience
+▪ ▪
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+EDB POSTGRES® AI
+YOUR SOVEREIGN DATA AND AI PLATFORM
+BUILD WITHOUT ACCELERATE AI INITIATIVES GET REAL-TIME INSIGHTS
+BOUNDARIES AND GROW REVENUE WITHOUT COMPLEXITY
+A single, sovereign data Secure, rapid, low-code, fully Rapid analytics and open
+platform for any workload integrated AI Factory ecosystem integrations
+DRIVE OPERATIONAL EFFICIENCY WITH HYBRID MANAGEMENT
+Cloud-native automation and deep observability across deployments from a single pane of glass
+DELIVER CONTROLLED OUTCOMES WITH COMPLETE SOVEREIGNTY
+Flexible deployment across hybrid software, sovereign data and AI factory, and managed platform
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+EDB Postgres® AI
+Database Analytics Accelerator AI Factory Hybrid Management
+ENTERPRISE POSTGRES SERVER
+ANALYTICS ENGINE VECTOR ENGINE HYBRID OBSERVABILITY
+ORACLE COMPATIBLE SERVER LAKEHOUSE CONNECTOR AI PIPELINE HYBRID DBAAS
+COMMUNITY POSTGRESQL SERVER SUPPORT FOR GREENPLUM GENAI BUILDER DISTRIBUTED HA (99.999%)
+WORKLOADS
+AGENT STUDIO MIGRATIONS
+MULTI-MODEL EXTENSIONS
+MODEL SERVING
+MANAGEMENT & OBSERVABILITY
+KUBERNETES OPERATORS
+SUPPLY CHAIN SECURITY
+MIGRATION TOOLS
+HIGH AVAILABILITY
+Deploy SOVEREIGN DATA AND AI FACTORY HYBRID SOFTWARE MANAGED PLATFORM
+Anywhere
+INTEGRATION PARTNERS: AWS, GCP, AZURE, RED HAT OPENSHIFT, IBM, SUPERMICRO, NVIDIA, GRIPTAPE
+Sovereign
+MANAGED SERVICES PILOT TO PRODUCTION SLAS OUTCOME EXECUTION
+Assurance
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PostgreSQL
+The open-source database of choice
+Performance Scalability Extensibility Community-driven
+Handles enterprise Multiple technical Supported by a wide Multiple companies
+workloads with 50% options for operating array of extensions and individuals
+improvement in the Postgres at scale plus multiple SQL contribute to the
+last 4 years and NoSQL data project and drive
+models innovation
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Enterprise Postgres (Oracle Compatible)
+Enterprise Postgres
+ Oracle Compatibility - Compatibility for schemas, data types, indexes, users,
+Oracle Compatibility roles, partitioning, packages, views, PL/SQL triggers, stored procedures,
+functions, and utilities
+ Additional Security - Password policy management, session tag auditing, data
+Additional Security
+redaction, SQL injection protection, and procedural language code obfuscation
+Developer Productivity
+ Developer Productivity - Over 200 pre-packaged utility functions, user-defined
+object types, autonomous transactions, nested tables, synonyms, advanced
+DBA Productivity queueing
+ DBA Productivity - Throttle CPU and I/O at the process level, over 55 extended
+catalog views to profile all the objects and processing that occurs in the
+Performance
+database
+ Performance - Query optimizer hints, SQL session/system wait diagnostics
+Replication Enhancements
+ Replication Enhancements - Enables EDB Postgres Distributed functionality such
+as Group Commit, Commit at Most Once and Eager all-node synchronous
+PostgreSQL
+replication, timestamp-based snapshots, estimates for replication catch-up
+times, selective backup of a single database, hold back freezing to assist
+resolution of UPDATE/DELETE conflicts, multi-node PITR
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Setup Guidelines
+All the instructor demos and labs are based
+on Linux. Here are the machine requirements:
+ Rocky Linux 9x with 2 GB RAM and 40 GB
+storage space is recommended.
+ Latest version of Enterprise Postgres (Oracle
+Compatible) must be installed
+ superuser access to Database and Operating
+System
+ EDB credentials for EDB Repos
+ Internet access for downloading EDB
+packages
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Prepare a Sample Database
+ In the training materials provided by EDB Postgres AI, there is a script file edbstore.sql
+that can be executed using psql to create a sample edbstore database.
+ Here are the steps:
+ Download the edbstore.sql file and place in a directory which is accessible to the enterprisedb user
+ Login as enterprisedb OS user
+ Run the edb-psql command with the -f option to execute the edbstore.sql file and install all the sample
+objects required for this training
+$ psql -p 5444 -f edbstore.sql –d edb –U enterprisedb
+ Note - The above command will prompt for edbuser password. The password is edbuser
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Prepare a Sample Database (Continued)
+ Connect to edbstore database
+using edbuser
+ psql -p 5444 –d edbstore –U
+edbuser
+ Verify the existence of the
+objects in psql by running \d
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ EDB Postgres AI Platform
+ Facts about PostgreSQL and
+Enterprise Postgres
+ Lab Setup - Prepare a Sample
+Database
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Monitoring
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Module Objectives
+ What is Database Monitoring?
+ Postgres Stats Tables and Stats Collector Process
+ Which Monitoring Tool to use?
+ Check Sessions Activity and Locking
+ Use pg_stat_statements to track planning and execution statistics
+ How to Manage and Monitor Postgres using Postgres Enterprise Manager
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Monitoring
+ Capturing and recording the
+database events
+ Detect, identify and fix potential
+database performance issues
+ Database statistics make it easy
+for you to monitor the health and
+performance of PostgreSQL
+databases
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Monitoring Utilities
+ Why is my database running
+auto_explain pg_stat_stat
+Parser and Planner ements
+slower?
+stats pgBadger
+Database Logging
+Statistics
+ How to monitor slow running
+SQL SQL
+queries, locking, errors and on- Engine Queries
+going maintenance activities.
+ Open-source tools like pgBadger
+Operating
+Sessions
+can complement PostgreSQL
+System
+Check postgres pg_stat_activity
+Logging
+vmstat, iostat and pg_locks
+netstat Top and ps
+ Complete Monitoring - Postgres
+Enterprise Manager
+Postgres Enterprise Manager
+Manage, Monitor and Tune Postgres
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Statistics
+Database statistics catalog tables
+Shared Memory
+store database activity information:
+Statistics
+ Current running sessions and SQL queries
+ Locks
+ DML counts
+ Row counts
+ Index usage pg_catalog
+Statistics Tables
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+The Cumulative Statistics System
+ The Cumulative Statistics System collects and
+reports information about database activities
+Cumulative Statistics Written to disk in
+Stats collected by User
+stored in Shared pg_stat during
+Process
+Memory Checkpoints
+Note: Postgres version 14 or older uses a background
+process called stats collector for gathering such statistics
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Statistics System Configuration
+ Statistics system adds some overhead
+track_counts
+to query execution • controls table and index statistics
+ Parameters can be configured at
+track_activities
+instance, database, user or session level • enables monitoring of the current command
+ Access to cumulative and dynamic
+track_io_timing
+statistics is restricted to superusers and • enables monitoring of block read and write times
+users with pg_read_all_stats role
+track_wal_io_timing
+ Cumulative statistics is not the same as • enables monitoring of WAL I/O timing
+running ANALYZE to gather row
+sampling data
+stats_fetch_consistency
+• show static information based on set value of none, cache or
+snapshot. Default is cache
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Statistic Tables
+Table or View Description
+pg_class and pg_stats Catalog tables which stores all statistics
+System view can be used to view stats information about a database and
+pg_stat_database
+temporary file counts and sizes
+pg_stat_bgwriter Shows background writer stats and checkpoint timing information
+Shows information about activities on a table like inserts, updates, deletes,
+pg_stat_user_tables
+vacuum, autovacuum etc.
+pg_stat_user_indexes Shows information about index usage for all user tables
+Shows one row for each backend including autovacuum worker processes
+pg_stat_progress_vacuum
+that is currently vacuuming
+pg_stat_progress_create_index Shows progress of CREATE INDEX and REINDEX operations
+pg_stat_progress_cluster Shows progress of CLUSTER and VACUUM FULL
+pg_backend_memory_contexts View memory context for the for current server process
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Monitoring I/O
+Backend types
+ The pg_stat_io view Cluster-wide I/O
+ background worker
+statistics
+ autovacuum workers
+ checkpointer and more
+ The View represents a combination
+of backend type, target I/O object,
+I/O operations
+and I/O context
+ Reads  Evictions
+ Writes  Reuses
+ High evictions count may suggest a  Extends  Fsyncs
+ Hits
+need to increase shared buffers
+ Large numbers of fsyncs by client
+I/O contexts
+backends could indicate
+ Normal
+misconfiguration of shared buffers
+ Vacuum
+ Bulkread
+or the checkpointer
+ Bulkwrite
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Monitoring Views
+Check wait events using
+▪
+pgdb=# SELECT * FROM pg_wait_events ;
+pg_wait_events
+type | Activity
+name | ArchiverMain
+description | Waiting in main loop of archiver process
+Checkpointer process statistics
+▪
+can be viewed using
+pgdb=# SELECT * FROM pg_stat_checkpointer;
+pg_stat_checkpointer num_timed | 257
+num_requested | 4
+restartpoints_timed | 0
+restartpoints_req | 0
+Index processing during
+▪ restartpoints_done | 0
+write_time | 291771
+vacuuming can now be checked
+sync_time | 24
+buffers_written | 2910
+using indexes_total and
+stats_reset | 2024-10-23 17:50:04.307163+00
+indexes_processed of
+pg_stat_progress_vacuum
+view
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Sessions Activity and
+Locking
+Check Current Session Activity
+ pg_stat_activity
+Check Transaction Duration
+ pg_stat_activity
+Current Locks in Lock Manager
+ pg_locks
+Blocking Session
+ pg_stat_activity and pg_blocking_pids()
+Lock Waits
+ pg_stat_activity and pg_locks
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Error Reporting and Logging
+ Monitor and track what’s
+happening using the in-built
+logging features of Postgres
+ Logs are text files
+Text
+Logger or
+containing errors, info and User Activity Log
+syslog
+various other messages Files
+ SQL queries can be written
+to logs
+Logging Configuration: What, When and Where to Log
+ Logs can be shipped to a
+central location and parsed
+using various tools
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Logging Parameters
+Configure where, when and what to log in postgresql.conf file
+Location Events Information
+Written to Logs
+log_destination log_min_duration_statement log_line_prefix
+logging_collector log_min_duration_sample log_statement
+log_directory log_statement_sample_rate log_temp_files
+log_filename log_autovacuum_min_duration
+log_checkpoints
+log_connections
+log_lock_waits
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Tracking Execution Statistics
+ Track query execution statistics using pg_stat_statements extension
+ pg_stat_statements tracks statistics across all databases of a cluster
+ pg_stat_statements extension add view, functions and configuration parameters
+ View - pg_stat_statements to access the query statistics
+ Functions - pg_stat_statements_reset to reset the statistics
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pg_stat_statements Setup
+ Add pg_stat_statements to shared_preload_libraries parameter in
+postgresql.conf
+ Configurable parameters:
+ pg_stat_statements.max -Maximum number of tracked statements, default 5000
+ pg_stat_statements.track – Which statements are counted, top, all or none. Default is top
+ pg_stat_statements.track_utility - Track commands other than SELECT, INSERT, UPDATE and
+DELETE. Default is ON
+ pg_stat_statements.track_planning – Track planning operations and duration
+ pg_stat_statements.save - Whether save statement statistics across server shutdowns. Default is ON
+ Restart the Database Cluster
+ Connect with a database and enable pg_stat_statements extension
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Postgres Enterprise Manager
+Manage, monitor, and tune Postgres at scale
+Manage from one Optimize database Monitor system Integrate with
+interface performance health other tools
+One place to visualize In-depth diagnostics Built-in dashboards APIs and webhooks
+and manage for database reports and customizable to fetch data, send
+everything and tuning alert thresholds alerts, and manage
+servers
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM - Features
+Manage, Monitor and Tune PostgreSQL and Enterprise Postgres running on multiple Platforms
+Management Monitoring Tuning
+ Integrated SQL IDE  Customizable charts and  Detailed performance
+dashboards diagnostics
+ Built-in query debugger
+ Predefined and custom alerts  SQL profiler
+ User/group access
+via email or SNMP
+management  Capacity management
+ User-defined metrics log
+ Schema Diff  Log manager
+analysis
+ Session profiling  Expert wizards for
+ Database and OS level
+configuration setup
+ Job scheduling
+monitoring
+ Backup and failover
+ Web hooks and REST API for
+management
+integrations
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Components
+What can be monitored using PEM?
+ Hosts – Operating System
+ Servers – Postgres Instances
+ Databases – Databases and Schema Objects
+Individual Software Components:
+ PEM Server
+ PEM Web Client
+ SQL Profiler
+ PEM Agent
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Architecture
+PEM Web
+PostgreSQL Enterprise Management
+Application Postgres Only
+HTTPD
+Monitoring
+PostgreSQL
+PEM Agent PEM Agent
+Data
+Managed Host Machine
+Client(Browser)
+Monitoring
+Enterprise
+Data Postgres
+Enterprise
+Postgres
+PEM Storage
+(Backend Database: pem) Monitoring
+PEM Agent
+Data
+Remote
+Managed Host Machine
+Monitoring
+Unmanaged Hosts
+PEM Server Host Machine Managed Hosts
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Server and Agent Communication
+OS and Database Monitoring
+Scheduled Tasks
+Alerts Processing PEM
+SNMP/SMTP Spooler Agent
+Nagios Spooler
+libpq(ssl) libpq connection
+Enterprise
+connection using (Configured using Postgres
+agent user PEM PEM Agent tab)
+Backend Database: pem
+Agent
+Schema: pem
+OS and Database Monitoring
+Current Monitoring Data(pemdata)
+Scheduled Tasks
+Historical Monitoring Data(pemhistory)
+Managed Host Machine
+PEM Server Host Machine
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM- Supported CPU Architecture and OS
+ PEM Server can be installed on various flavors of Linux including Rocky, RHEL
+and Ubuntu
+ PEM Server can be installed on Linux x86-64 (amd64), Linux on IBM Power and
+Windows x86-64
+ PEM Web Client can be accessed using Chrome, Firefox, Microsoft Edge and
+Safari browser.
+ PEM Agent and SQL Profiler is supported on any platform where PostgreSQL or
+Enterprise Postgres version 9.6 or higher is installed.
+ Check latest platform support:
+https://www.enterprisedb.com/product-compatibility#pem
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Installation - Prerequisites
+ PEM server requires a backend database for storing monitoring data.
+ Backend database can be Enterprise Postgres or PostgreSQL. Recommended
+version is 12 or higher.
+ It is recommended to install PEM server on a system with at least 4 CPU cores,
+8GB of RAM and 100GB of Storage.
+ Additional disk space is required based on number of monitored instances and
+retention period for monitoring data.
+ pg_hba.conf entries are required for PEM server PEM agent and PEM-HTTPD
+service connection to managed or unmanaged instances.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Postgres Enterprise Manager Download
+ Go to www.enterprisedb.com and sign in or sign up for a free account
+ Go to Resources->Downloads
+ Look for Postgres Enterprise Manager and Click on Server
+ Click on Access Repo button to activate your edb.repo access
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+EDB Repo Access Details
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Installation – EDB Repos 2.0 Configuration for Linux
+ On EDB Repositories page, select platform
+and search for Postgres Enterprise Manager
+ Select latest version of PEM to view the
+installation instructions
+ Follow Auto or Manual installation steps to
+configure enterprisedb repo
+ Example: Auto Mode
+curl -1sLf 'https://downloads.enterprisedb.com/<token>/enterprise/setup.rpm.sh'
+| sudo -E bash
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Preparing PEM Repo Database
+ Install Enterprise Postgres version 12 or later
+ An existing install of Enterprise Postgres or PostgreSQL can be used.
+ Setup a database cluster and start the database service
+ Docs: https://www.enterprisedb.com/docs/epas/latest/installing/
+ Gather connection information
+ Hostname, Port, User, Password
+ Database superuser access is required by PEM installer
+ Install sslutils and contrib packages if using PostgreSQL
+ dnf install sslutils_<x> postgresql<X>-contrib
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Install PEM server on Linux
+ Install the PEM server on Rocky
+Linux 9 or RHEL:
+ dnf –y install edb-pem
+ PEM Agent (edb-pem-agent) is installed
+by default
+ PEM Agent can be installed on
+managed hosts using:
+ dnf –y install edb-pem-agent
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Post Install PEM Server
+Configuration
+ The PEM server installation
+includes a configuration script
+that helps in:
+ Repo database (pem) setup
+ PEM Web Services setup
+ Local PEM Agent registration/binding
+ Script must be run as root or sudo
+user:
+ /usr/edb/pem/bin/configure-pem-server.sh
+ Configuration options and help:
+ /usr/edb/pem/bin/configure-pem-server.sh
+--help
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Web Client
+ Open PEM Web Client using the URL provided at the end of installation:
+--> [Info] --> [Info]
+Configured the webservice for EDB
+Postgres Enterprise Manager (PEM)
+Server on port '8443'.
+--> [Info] --> [Info] PEM
+server can be accessed at
+https://127.0.0.1:8443/pem
+at your browser
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Web Client - First Look
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Accessing PEM Web Interface
+ PEM client can be accessed using a  Default port for PEM client is 8443
+browser
+ Open PEM client using:
+ Your browser may require a security https://<pem_host_ip>:8443/pem
+exception to access PEM logon page
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Register a Server
+ Use the Create - Server dialog to register a new server connection
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Managing Probes
+ The Manage Probes tab
+provides a set of Quick
+Links that you can use to
+create and manage probes.
+ You can modify the
+properties of an existing
+probe and create custom
+probes using Manage
+Probes tab.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Dashboards
+ Postgres Enterprise Manager uses metrics (retrieved by probes) to generate the
+statistical information displayed on the dashboards.
+ Dashboards use Tables, Pie charts, Bar and Line graphs to display statistical data.
+ Dashboards Configuration
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Opening Dashboard
+ PEM Dashboard menu bar option can be used to open available dashboard
+ Dashboard menu automatically display available dashboard based on selection in
+Browser tree control
+ Use Manage Dashboard dialog from Management menu to create a custom
+dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Global Overview Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Alerts Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+

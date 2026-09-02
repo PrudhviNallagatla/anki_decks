@@ -1,0 +1,585 @@
+Source PDF: EDB Postgres AI Database Essentials v17_Student_144dpi_75%.pdf
+Pages: 151 to 200
+========================================
+
+Database Users
+ Are global across a database cluster
+ Are not the operating system users
+ Are used for connecting to a database
+ Have a unique name not starting with pg_
+ enterprisedb is a predefined superuser
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Creating Users Using psql
+ How to create? CREATE USER sql command
+ How to delete? DROP USER sql command
+ superuser or createrole privilege is required for creating a database user
+Syntax: Example:
+CREATE USER name [ [ WITH ] option [ ... ] ]
+where option can be:
+SUPERUSER | CREATEDB | CREATEROLE | LOGIN |
+REPLICATION | BYPASSRLS CONNECTION LIMIT
+connlimit
+| PASSWORD 'password'| VALID UNTIL 'timestamp'
+| PROFILE profile_name
+| ACCOUNT { LOCK | UNLOCK }
+| LOCK TIME 'timestamp'
+| PASSWORD EXPIRE [ AT 'timestamp' ]
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Creating Users Using createuser
+ The createuser utility can also be used to create a user
+ Syntax:
+$ createuser [OPTION]... [ROLENAME]
+ Use --help option to view the full list of options available
+ Example:
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Alter Users Using alteruser
+ The alteruser utility can also be used to create a user
+ Syntax:
+$ alteruser [OPTION]... [ROLENAME]
+ Use --help option to view the full list of options available
+ Example:
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+User Profile Management
+ A profile is a named set of password attributes  Password attributes:
+ User profiles can be used to manage account status  FAILED_LOGIN_ATTEMPTS
+and password expiration
+ PASSWORD_LOCK_TIME
+ The default profile is assigned to all users
+ PASSWORD_LIFE_TIME
+ PASSWORD_GRACE_TIME
+ PASSWORD_REUSE_TIME
+ PASSWORD_REUSE_MAX
+ PASSWORD_VERIFY_FUNCTION
+ PASSWORD_ALLOW_HASHED
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Creating A User Profile
+ How to create? CREATE PROFILE command
+ How to delete? DROP PROFILE command
+ Example:
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Roles
+ Role is a collection of cluster and object level privileges
+ Role makes it easier to manage multiple privileges
+ How to create? CREATE ROLE statement
+ How to assign? GRANT statement
+ Who it can be assigned to? User or a group
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Default Roles
+aq_administrator_role  Provide certain administrative
+pg_checkpoint capabilities using these default roles
+pg_create_subscription
+pg_database_owner
+ For Example, create a new user with
+pg_execute_server_program
+read only access or a new user with
+pg_maintain
+access to view monitoring data only
+pg_monitor
+pg_read_all_data
+pg_read_all_settings
+pg_read_all_stats
+pg_read_server_files
+pg_signal_backend
+pg_stat_scan_tables
+pg_use_reserved_connections
+pg_write_all_data
+pg_write_server_files
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Tablespaces and Data Files
+ Data is stored logically in tablespaces and physically in data files
+ Tablespaces:
+ Can belong to only one database cluster
+ Consist of multiple data files
+ Can be used by multiple databases
+ Data Files:
+ Can belong to only one tablespace
+ Are used to store database objects
+ Cannot be shared by multiple tables (one or more per table)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Advantages of Tablespaces
+ Control the disk layout for a database cluster
+ Store indexes and data physically separated for performance
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+ecnatsnI
+esabataD
+Indexes
+Tablespace A
+Fast Storage
+Transactional Tables
+Historical Tables
+Tablespace B
+Slow Storage
+Seldom Used Partition
+
+Pre-Configured Tablespaces
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+ecnatsnI
+esabataD
+PGDATA/global directory
+pg_global
+Tablespace
+Cluster-wide tables and catalog objects
+PGDATA/base directory
+pg_default
+Tablespace
+Databases, schemas and other objects
+
+Creating Tablespaces
+Tablespace Physical Cluster Data
+ How to create? CREATE
+Directory Directory
+TABLESPACE command
+ The tablespace directory must
+be existing with permissions Directory(Database
+pg_tblspc
+Catalogue Version)
+ Syntax:
+CREATE TABLESPACE
+Database Directory Symbolic
+tablespace_name [ OWNER
+for each Database Link(Tablespace OID)
+user_name ]
+LOCATION 'directory‘;
+Database
+Objects(Files)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - CREATE TABLESPACE
+[training@Base ~]$ sudo mkdir /newtab1
+[training@Base ~]$ sudo chown enterprisedb:enterprisedb /newtab1
+[training@Base ~]$ su - enterprisedb
+[enterprisedb@Base ~]$ psql -p 5444 edb enterprisedb
+edb=# CREATE TABLESPACE fast_tab LOCATION '/newtab1';
+CREATE TABLESPACE
+edb=# \db
+List of tablespaces
+Name | Owner | Location
+------------+--------------+----------
+fast_tab | enterprisedb | /newtab1
+pg_default | enterprisedb |
+pg_global | enterprisedb |
+(3 rows)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Using Tablespaces
+ Use the TABLESPACE keyword while creating databases, tables and indexes
+edb=# CREATE TABLE account(acno NUMBER PRIMARY KEY,
+ac_hldr_fname VARCHAR2(20)) TABLESPACE fast_tab;
+CREATE TABLE
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Default and Temp Tablespace
+ default_tablespace server parameter sets default tablespace
+ default_tablespace parameter can also be set using the SET command at the session
+level
+ temp_tablespaces parameter determines the placement of temporary tables and indexes
+and temporary files
+ temp_tablespaces can be a list of tablespace names
+edb=# show default_tablespace; edb=# set temp_tablespaces to 'tbspace1';
+default_tablespace SET
+-------------------- edb=# show temp_tablespaces;
+temp_tablespaces
+(1 row) ------------------
+edb=# show temp_tablespaces; tbspace1
+temp_tablespaces (1 row)
+------------------
+(1 row)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Altering Tablespaces
+ ALTER TABLESPACE can be used to rename a tablespace, change
+ownership and set a custom value for a configuration parameter
+ Only the owner or superuser can alter a tablespace
+ The seq_page_cost, random_page_cost,
+effective_io_concurrency and
+maintenance_io_concurrency parameters can be altered for a
+tablespace
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - Alter Tablespace
+Syntax:
+ALTER TABLESPACE name RENAME TO new_name
+ALTER TABLESPACE name OWNER TO { new_owner | CURRENT_USER | SESSION_USER }
+ALTER TABLESPACE name SET ( tablespace_option = value [, ... ] )
+ALTER TABLESPACE name RESET ( tablespace_option [, ... ] )
+edb=# ALTER TABLESPACE fast_tab RENAME TO new_tab;
+ALTER TABLESPACE
+edb=# \db
+List of tablespaces
+Name | Owner | Location
+------------+--------------+----------
+new_tab | enterprisedb | /newtab
+pg_default | enterprisedb |
+pg_global | enterprisedb |
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Dropping a Tablespace
+ DROP TABLESPACE removes a tablespace from the system
+ Only the owner or superuser can drop a tablespace
+ The tablespace must be empty
+ If a tablespace is listed in the temp_tablespaces parameter,
+make sure current sessions are not using the tablespace
+ DROP TABLESPACE cannot be executed inside a transaction
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+What Is a Database?
+ A database is a named collection of SQL objects
+ A running Postgres instance can manage multiple databases
+ How to create? CREATE DATABASE command
+ How to delete? DROP DATABASE command
+ To determine the set of existing databases:
+ SQL - SELECT datname FROM pg_database;
+ psql META COMMAND - \l (backslash lowercase L)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Creating Databases
+ Database can be created using:
+1. createdb utility program
+2. CREATE DATABASE SQL command
+ SQL Command syntax:
+CREATE DATABASE name [ [ WITH ] [ OWNER [=] user_name ]
+[ TEMPLATE [=] template ]
+[ ENCODING [=] encoding ]
+[ TABLESPACE [=] tablespace_name ]
+[ ALLOW_CONNECTIONS [=] allowconn ]
+[ CONNECTION LIMIT [=] connlimit ]
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - Creating Databases
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Accessing a Database
+ PEM Web Client or psql can be used to
+access a database
+ To use psql, open a terminal and execute:
+$ psql –U postgres –d prod
+ Note: If PATH is not set you can execute psql
+command from the bin directory of postgres
+installation
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Privileges
+ Cluster level
+ Granted to a user during CREATE or later using ALTER USER
+ These privileges are granted by superuser
+ Object Level
+ Granted to user using GRANT command
+ These privileges allow a user to perform particular actions on a database object, such as
+tables, views, or sequence
+ Can be granted by owner, superuser or someone who has been given permission to grant
+privileges (WITH GRANT OPTION)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+GRANT Statement
+ Grants object level privileges to database
+users, groups or roles
+ GRANT can also be used to grant a role to a
+user
+ How to view syntax and available privileges?
+ Type \h GRANT in psql
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example – GRANT Statement
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+REVOKE Statement
+ Revokes object level privileges from database users, groups or roles
+ REVOKE [ GRANT OPTION FOR ] can be used to revoke only the grant
+option without revoking the actual privilege
+ How to view syntax and available privileges?
+ Type \h REVOKE in psql
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - REVOKE Statement
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+What is a Schema
+SCHEMA
+Tables Views
+Owns
+Sequences Functions
+USER
+Domains
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Benefits of Schemas
+ A database can contain one or more named schemas
+ By default, all databases contain a public schema
+ There are several reasons why one might want to use schemas:
+ To allow many users to use one database without interfering with each other
+ To organize database objects into logical groups to make them more manageable
+ Third-party applications can be put into separate schemas so they cannot collide
+with the names of other objects
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Creating Schemas
+ Schemas can be added using the CREATE SCHEMA SQL command
+ Syntax:
+CREATE SCHEMA IF NOT EXISTS schema_name [ AUTHORIZATION
+role_specification ]
+ Example:
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+What is a Schema Search Path
+ The schema search path determines which schemas are
+searched for matching table names
+ Search path is used when fully qualified object names are
+not used in a query
+ Example:
+SELECT * FROM employee;
+ This statement will find the first employee table from the schemas
+listed in the search path
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Determine the Schema Search Path
+ To show the current search path, use the following command:
+ => SHOW search_path;
+ Default search_path is "$user",public
+ Search path can be changed using SET command:
+ => SET search_path TO myschema, public;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Object Ownership
+Database
+Cluster
+Owner
+Users/Groups
+Database Tablespaces
+(Roles)
+Catalogs Schema Extensions
+Table View Sequence Functions Event Triggers
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ Object Hierarchy
+ Users and Roles
+ Tablespaces
+ Databases
+ Access Control
+ Creating Schemas
+ Schema Search Path
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 1
+ An e-music online store website
+application developer wants to add an
+online buy/sell facility and has asked you
+to separate all tables used in online
+transactions. Here you have suggested
+to use schemas. Implement the
+following suggested options:
+ Create an ebuy user with password ‘lion’
+ Create an ebuy schema which can be used
+by user ebuy
+ Login as the ebuy user, create a table
+sample1 and check whether that table
+belongs to the ebuy schema or not
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 2
+ Retrieve a list of databases
+using a SQL query
+ Retrieve a list of databases
+using the psql meta
+command
+ Retrieve a list of tables in
+the edbstore database and
+check which schema and
+owner they have
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database
+Security
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ Database Security Requirements and
+Protection Plan
+ Levels of Security in Postgres
+ Access Control using pg_hba.conf
+ Introduction to Row Level Security
+ Data Encryption
+ Advanced Features - Data Redaction,
+SQL/Protect and EDB*Wrap
+ General Security Recommendations
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Why Database Security
+ Databases are a core component
+of many computing systems
+ Confidential data like SIN(Social
+Insurance Number), Healthcare,
+Banking details is stored and
+shared using databases
+ It is very critical to protect stored
+information from hackers,
+insiders, and other groups who
+intend to steal valuable data
+ Database Security is a
+mechanism to protect the data
+against threats
+197
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Data Security Requirements
+ Stopping improper disclosure,
+modification and denial of access
+to information is very important
+ Who wants an employee finding
+out boss’s salary, changing
+his/her salary or stopping HR
+from printing paychecks
+ Database Security Requirements
+includes:
+ Confidentiality
+ Integrity
+ Availability
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Protection Plan – We all need one
+ Access Control
+Prevent
+ Authentication and Authorization
+ Data Control
+ Views, Row Level Security, Encryptions
+ Network Control
+Attacks
+ SSL Connections, Firewalls
+ Auditing
+Protect Discover
+ Monitoring
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Levels of Security
+Server and  Check Client IP
+Application  pg_hba.conf
+ User/Password
+ Connect Privilege Database
+ Schema Permissions
+ Table Level Privileges
+Object
+ Grant/Revoke
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Host Based Access Control
+pg_hba.conf
+Postmaster
+Certificate
+Client
+IP: 10.8.99.30
+User: appuser1
+ pg_hba.conf can be used to restrict the ability to connect to a database
+ SSL can be forced for selected clients based on hostname or IP address
+ Different authentication methods can be used
+ Superuser access can be locked down to certain IPs using pg_hba.conf
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pg_hba.conf - Access Control
+ Host based access control file
+ Located in the cluster data directory
+ Read at startup, any change requires reload
+ Contains a set of records, one per line
+ Each record specifies a connection type, database name, user name, client IP and method of
+authentication
+ Top to bottom read
+ Hostnames, IPv6 and IPv4 supported
+ Authentication methods - trust, reject, md5, password, gss, sspi, krb5, ident, peer, pam, ldap,
+radius, bsd, scram or cert
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pg_hba.conf Example
+# TYPE DATABASE USER ADDRESS METHOD
+# "local" is for Unix domain socket connections only
+local all all peer
+# IPv4 local connections:
+host all all 127.0.0.1/32 ident
+# IPv6 local connections:
+host all all ::1/128 ident
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local replication all peer
+host replication all 127.0.0.1/32 ident
+host replication all ::1/128 ident
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Authentication Problems
+FATAL: no pg_hba.conf entry for host "192.168.10.23", user
+“edbstore", database “edbuser“
+FATAL: password authentication failed for user “edbuser“
+FATAL: user “edbuser" does not exist
+FATAL: database “edbstore" does not exist
+ Self-explanatory message is displayed
+ Verify database name, username and Client IP in pg_hba.conf
+ Reload Cluster after changing pg_hba.conf
+ Check server log for more information
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Row Level Security (RLS)
+ GRANT and REVOKE can be used at table
+level Account Balance
+Company J $23,925
+ PostgreSQL supports security policies
+for limiting access at row level
+Company M $133,007
+ By default, all rows of a table are visible
+Company Z $17,092
+ Once RLS is enabled on a table, all
+Company L $997,654
+queries must go through the security
+policy
+Company R $72,871
+ Security policies are controlled by DBA
+Company A $0.0
+rather than application
+Company T $50,194
+ RLS offers stronger security as it is
+enforced by the database
+Company Q $67,892
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - Row Level Security
+ For example, to enable row level security for the table accounts :
+ Create the table first
+edb=# CREATE TABLE accounts (manager text, company text, contact_email text);
+ Then alter the table
+edb=# ALTER TABLE accounts ENABLE ROW LEVEL SECURITY;
+ Syntax:
+CREATE POLICY name ON table_name
+[ AS { PERMISSIVE | RESTRICTIVE } ]
+[ FOR { ALL | SELECT | INSERT | UPDATE | DELETE } ]
+[ TO{ role_name | PUBLIC | CURRENT_USER | SESSION_USER}[,...] ]
+[ USING ( using_expression ) ]
+[ WITH CHECK ( check_expression ) ]
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - Row Level Security (continued)
+ To create a policy on the accounts table to allow the managers role to view the rows
+of their accounts, the CREATE POLICY command can be used:
+edb=# CREATE POLICY account_managers ON accounts TO managers USING
+(manager = current_user);
+ To allow all users to view their own row in a user table, a simple policy can be used:
+edb=# CREATE POLICY user_policy ON users USING (user = current_user);
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Additional Security in Enterprise Postgres
+ Enterprise Postgres supports all the security options
+available in PostgreSQL, plus:
+ Transparent Data Encryption
+ Database Level Encryption
+ User Profiles and Password Policy Manager
+ SQL/Protect - Protection against SQL Injections
+ DBMS_CRYPTO, DBMS_RLS, DBMS_REDACT
+ Data redaction
+ EDB*Wrap - Obfuscate Source Code
+ Enhanced Auditing using edb_audit
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+

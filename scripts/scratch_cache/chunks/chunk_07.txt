@@ -1,0 +1,525 @@
+Source PDF: EDB Postgres AI Database Advanced v17_Student_144dpi_75%.pdf
+Pages: 251 to 294
+========================================
+
+Manage pgbouncer
+ Management commands can be used: Show stats, servers, clients, pools,
+lists, databases, fds
+ Manage pgbouncer by connecting to the special administration database pgbouncer and
+issuing show help;
+$ psql -p 6432 -U someuser pgbouncer
+pgbouncer=# show help;
+NOTICE: Console usage
+DETAIL: SHOW
+[HELP|CONFIG|DATABASES|FDS|POOLS|CLIENTS|SERVERS|SOCKETS|LISTS|VERSION]
+251
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pgbouncer Example – Installation
+ This example will show how to install and configure pgbouncer to provide
+connection pooling for Postgres Cluster running on port 5444
+ Steps:
+1. Open a terminal and connect in as sudo or root user
+2. Execute “dnf install edb-pgbouncer123” command
+3. Verify pgbouncer version using “/usr/edb/pgbouncer1.23/bin/pgbouncer --
+version” command
+4. Configuration files are located in /etc/edb/pgbouncer1.23/ directory
+252
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pgbouncer Example – Configure a Database
+ This example will show the configuration of pgbouncer to provide connection pooling for
+edbstore database to edbuser user
+ Steps:
+5. Open pgbouncer.ini file and add the entry for edbstore
+$ vi /etc/edb/pgbouncer1.23/edb-pgbouncer-1.23.ini
+edbstore = host=127.0.0.1 port=5444 user=edbuser dbname=edbstore
+Verify following entries:
+listen_addr = *
+listen_port = 6432
+auth_file = /etc/edb/pgbouncer1.23/userlist.txt
+pool_mode = session
+253
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pgbouncer Example – Connect via pgbouncer
+6. Add the edbuser user in the user authentication file
+$ vi /etc/edb/pgbouncer1.23/userlist.txt
+"edbuser" "edbuser"
+7. Enable pgbouncer service
+# systemctl enable edb-pgbouncer-1.23
+8. Start pgbouncer service
+# systemctl start edb-pgbouncer-1.23
+9. Connect as enterprisedb user in the terminal and connect to the edbstore database
+using edb-psql via pgbouncer port
+# su – enterprisedb
+$ psql -p 6432 -h localhost -d edbstore -U edbuser
+254
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Cloning
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Module Objectives
+ Database Cloning
+ Creating a Clone Database
+ How to Clone a Database
+using pg_dump
+ Clone Schema
+ Setup Clone Schema
+ Install Clone Schema
+ Clone the Schema
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Cloning
+ Cloning creates a snapshot/copy of an existing database
+ All the objects and data is copied over to a new database
+ Cloning is different from replication or backup
+ Enterprise Postgres provides rapid and space efficient cloning of a database
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Steps for Creating a Clone of a Database
+ Identify the database to be cloned
+ Identify a name for the new clone
+ Verify no one is connected to the database to be cloned
+ Run the CREATE DATABASE..TEMPLATE command to create a clone
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Cloning a Database Using pg_dump
+ pg_dump can also clone a database between clusters
+ All options of pg_dump can be used for customization and speed
+ Need psql access to the database
+ Create a new blank database before running pg_dump
+ No need to remove connections from the to-be cloned database
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Clone Schema
+ Enterprise Postgres includes Clone Schema extension that gives the ability to
+make a copy of a schema with its database objects
+ Schema can be copied into another database or into same database with
+different name
+ Cloning of a schema can be done in an online as well as in non-blocking,
+background job mode
+ Multiple background worker process can be used to shorten the time of
+operation
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Setup Clone Schema – Install Extensions
+ It requires PL/Perl language installed along with the following extensions on the database:
+ postgres_fdw
+ dblink
+ edb_job_scheduler
+ DBMS_JOB
+ Step 1 – Install the extensions by following commands:
+ CREATE EXTENSION postgres_fdw;
+ CREATE EXTENSION dblink SCHEMA public;
+ CREATE EXTENSION edb_job_scheduler;
+ CREATE EXTENSION DBMS_JOB;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Setup Clone Schema – Install and Configure PL/Perl
+ Step 2 – Append $libdir/parallel_clone to the shared_preload_libraries in
+postgresql.conf
+ shared_preload_libraries=‘$libdir/parallel_clone’
+ Step 3 – Install Perl Procedural Language (PL/Perl) by downloading edb-as17-server-
+plperl if not installed
+ Connect to the database as a superuser and execute:
+ CREATE TRUSTED LANGUAGE plperl;
+ Step 4 – Restart the server
+ systemctl restart edb-as-17
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Install Clone Schema
+ These steps must be performed on any database to be used as the source or target database
+by an Clone Schema function:
+ Step 1 – Install the extension with following commands:
+ CREATE EXTENSION parallel_clone;
+ CREATE EXTENSION edb_cloneschema;
+ Step 2 – Create the foreign server and user mapping inside the database of the local server in
+which cloning is to occur
+ CREATE SERVER local_server FOREIGN DATA WRAPPER postgres_fdw OPTIONS ( host
+'localhost', port '5444', dbname 'edbstore’);
+ CREATE USER MAPPING FOR enterprisedb SERVER local_server OPTIONS ( user
+'enterprisedb',password 'password’ );
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example- Install Clone Schema
+ Execute steps 1 and 2 on previous slide in database edbstore. In this example
+edbuser schema will be cloned to edbcopy schema in database edbstore
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - Clone the Schema (Continued)
+ Clone edbuser schema to edbcopy schema in database edbstore
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Transparent Data
+Encryption
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Module Objectives
+ Data Security Levels
+ Data encryption options available
+with Enterprise Postgres
+ Overview of Transparent Data
+Encryption (TDE)
+ Data Encryption Key
+Management
+ Encrypt Database Cluster using
+TDE
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Data Security Levels
+Server and Application Database Object Data Encryption
+SSL Connections User/Password Table and Column TDE
+Level Privileges
+Host Based Access Connect Privilege EDB*Wrap
+Control Grant/Revoke
+Schema Permissions DBMS_ENCRYPT
+Database Firewall - DBMS_REDACT
+SQL Protect
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Data Encryptions options
+ Enterprise Postgres offer different levels and granularity of protection
+depending on the needs of the application
+ Oracle-compatible wrapper around pgcrypto - DBMS_CRYPTO
+ Encrypts data on disk using Transparent Data Encryption
+ Support for OS based encrypted file system
+ Data at-rest encryption using Thales CipherTrust Transparent Encryption
+ AES-256 encryption for TDE : Transparent data encryption (TDE) now supports the AES key
+length 256 option to TDE
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Transparent Data Encryption
+Unencrypted in Memory
+ It encrypts any user data Remote Host
+stored in the database Shared Buffers
+system
+8k 8k 8k App
+ Encryption is transparent to
+the user
+XTS-AES
+encrypt/decrypt
+ User data includes: Master
+Encryption
+Key
+Encrypted on Disk
+ Actual data stored in tables
+and other objects
+8k 8k 8k
+Ksdifhjnntdg56688212883fs-
+0435dF268463sf861;’[/5akmfsd
+fi04j;c,s;d\sdgm0943jfmsdmfs’e
+ System catalog data such as WAL Temp
+rjr[-043jtj’mpsdfj9430[j
+object names
+Data Blocks on Disk Database file contents
+unintelligible even to
+system administrators
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Encryption Coverage
+Encrypted: Not Encrypted:
+ Data Files - AES-128-XTS  Transaction status metadata
+ Write-Ahead Logs (WAL) - AES-  Data Directory File Names
+128-CTR
+ Foreign Tables
+ Temporary files - AES-128-XTS
+and AES-128-CBC  Error logs and config files
+ Base backups
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Data Encryption Key (Data Key)
+ The data key is generated by initdb and stored in a file “pg_encryption/key.bin”
+ Encryption key is external to the database allowing for simple passphrase
+encrypt/decrypt
+ Integration with various enterprise key management solutions:
+ Amazon AWS Key Management Service (KMS)
+ Google Cloud - Cloud Key Management Service
+ HashiCorp Vault
+ Microsoft Azure Key Vault
+ Thales CipherTrust Manager
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Data Encryption Key (Data Key)
+Data Key Protection Options:
+ Passphrase Protection:
+ Protect the data key by encrypting it with a
+wrapping key derived from a passphrase.
+ Key Management System (Key Store):
+ Store the wrapping key (key-wrapping key or
+master key) in a separate key management
+system.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Enabling TDE and Encrypting Data Key
+ Enable TDE during database initialization using -y or --data-encryption
+option
+ initdb provides data key wrapping options:
+--key-wrap-command
+--key-unwrap-command
+ Disable key wrapping using --no-key-wrap option
+ Optional environmental variables:
+ PGDATAKEYWRAPCMD
+ PGDATAKEYUNWRAPCMD
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Configuration Parameters
+ Postgres configuration parameters are
+automatically modified based on initdb
+options:
+ data_encryption_key_unwrap_command
+ data_encryption_key_unwrap_command
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example: Passphrase Protection
+ Initialize the cluster using initdb with TDE:
+initdb -D datadir1 -y --key-wrap-command='openssl enc -e -aes-128-
+cbc -pass pass:edb123 -out "%p"' --key-unwrap-command='openssl enc
+-d -aes-128-cbc -pass pass:edb123 -in "%p”’
+ Data key is protected(wrap) using a passphrase
+ Data key unwrap command is stored in postgresql.conf:
+data_encryption_key_unwrap_command = 'openssl enc -d -aes-128-cbc -
+pass pass:edb123 -in "%p“’
+ Password can also be prompted during initdb and start-up using systemd-ask-password
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example: Key Management System (AWS)
+Generate a new master key and assign an alias:
+ aws kms create-key
+ aws kms create-alias --alias-name alias/epas-master-tde1 --
+target-key-id "6c7188fd-5d62-4548-87d9-905de1c3835c"
+Encryption/Decryption commands for the TDE data key:
+ export PGDATAKEYWRAPCMD='aws kms encrypt --key-id alias/epas-
+master-tde1 --plaintext fileb:///dev/stdin --output text --query
+CiphertextBlob | base64 -d > "%p“’
+ export PGDATAKEYUNWRAPCMD='aws kms decrypt --key-id alias/epas-
+master-tde1 --ciphertext-blob fileb://"%p" --output text --query
+Plaintext | base64 -d’
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example: Key Management System (AWS)
+ Initialize the cluster using initdb with TDE:
+initdb -D datadir2 -y
+ Data key unwrap command is stored in postgresql.conf:
+data_encryption_key_unwrap_command = 'aws kms decrypt --key-id
+alias/epas-master-tde1 --ciphertext-blob fileb://"%p" --output text --query
+Plaintext | base64 -d'
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Upgrading Best
+Practices
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Module Objectives
+ Version Change and Upgrade
+ Need to Upgrade
+ Upgrade Plan
+ Upgrade Using pg_upgrade
+ Upgrading Best Practices
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Version Change and Upgrade
+ Minor Version Upgrade
+ Storage format not changed Minor
+Version
+ Simply replace executable
+Upgrade
+Major
+ Start server with upgraded executable Version
+and old data directory Upgrade
+ Major Version Upgrade
+ Storage format may change
+ Upgrade is complicated and can be
+performed using:
+ pg_dumpall
+ pg_upgrade
+ Replication
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Need to Upgrade
+ Enterprise Postgres is an actively developed database
+ Major releases include new features, capabilities and
+performance enhancements
+ Minor releases include security and data corruption
+bug fixes
+ EDB Postgres® AI recommends all users to run the
+latest available minor release
+ Not upgrading is riskier than upgrading
+ EDB Postgres® AI aims to fully support a major
+release for five years
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Upgrade Plan
+1. Read the release notes and check for user-visible
+Plan
+incompatibilities :
+https://www.enterprisedb.com/docs/epas/latest/epas_
+rel_notes/epas17_2_rel_notes/
+Upgrade
+2. Application must be tested on new version before
+complete switch
+3. It is recommended to setup concurrent installations of
+old and new Postgres versions Test
+4. Plan for the worst case – Going back to old version
+5. Decide the cutoff time
+Maintain
+6. Communicate the goal and timing to the technical
+support team
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Upgrade Using pg_upgrade
+Enterprise Postgres pg_upgrade Enterprise Postgres
+ Runs on new server  Latest Version
+ Version 9.0 or later
+ Old and new cluster info  New Features
+ Data directory
+ Can be run in link mode  Better Performance
+ Old binaries
+ Support for Parallel load
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - pg_upgrade
+ Scenario: Upgrade Enterprise Postgres 16 data cluster to Enterprise Postgres 17
+ Solution:
+object_name object_type
+ Step 1 - Verify the source version, objects and data directory
+emp_comp Function
+emp_query Function
+emp_query_caller Function
+[enterprisedb@training ~]$ psql -p 5442 edb
+emp_sal_trig_emp Function
+edb=# select version();
+hire_clerk Function
+PostgreSQL 16.6 (EnterpriseDB EDB Postgres
+Advanced Server 16.6.0) on x86_64-pc-linux- hire_salesman Function
+gnu, compiled by gcc (GCC) 11.5.0 20240719 list_emp Function
+(Red Hat new_empno Function
+11.5.0-2), 64-bit
+select_emp Function
+edb=# show data_directory;
+user_audit_trig_emp Function
+data_directory
+next_empno Sequence
+------------------------
+dept Table
+/var/lib/edb/as16/data
+emp Table
+jobhist Table
+salesemp Table
+salesemp View
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - Install and Create Cluster
+ Step 2 - Install Enterprise Postgres 16
+ Step 3 - Initialize a new 17 data cluster and change default port
+[enterprisedb@training ~]$ initdb --version
+initdb (EnterpriseDB) 17.2.0
+[enterprisedb@training ~]$ initdb -D /home/enterprisedb/data17 -W
+[enterprisedb@training ~]$ vi data17/postgresql.conf
+port=5445
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - Stop Cluster and Perform Consistency Check
+ Step 4 - Stop source 16 data cluster
+[enterprisedb@training ~]$ exit
+[centos@training ~]$ sudo systemctl stop edb-as-16
+[centos@training ~]$ sudo su - enterprisedb
+ Step 5 – Perform a consistency check
+[enterprisedb@training ~]$ pg_upgrade -d /var/lib/edb/as16/data/
+-D /home/enterprisedb/data17 -p 5442 -P 5445 -b
+/usr/edb/as16/bin/ -B /usr/edb/as17/bin/ --check
+Performing Consistency Checks
+-----------------------------
+Checking cluster versions
+……………
+*Clusters are compatible*
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example – Run pg_upgrade and Start Cluster
+ Step 6 - Run pg_upgrade
+[enterprisedb@training ~]$ pg_upgrade -d /var/lib/edb/as16/data/ -D
+/home/enterprisedb/data17 -p 5442 -P 5445 -b /usr/edb/as16/bin/ -B /usr/edb/as17/bin/
+Upgrade Complete
+----------------
+Optimizer statistics are not transferred by pg_upgrade.
+Once you start the new server, consider running:
+/usr/edb/as17/bin/vacuumdb --all --analyze-in-stages
+Running this script will delete the old cluster's data files:
+./delete_old_cluster.sh
+ Step 7 - Start newly upgraded cluster after changing port to 5445
+[enterprisedb@training ~]$ pg_ctl --version
+pg_ctl (EnterpriseDB) 17.2.0
+[enterprisedb@training ~]$ pg_ctl -D /home/enterprisedb/data17/ start
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - Connect and Verify
+object_name object_type
+ Step 8 - Connect and verify upgrade
+emp_comp Function
+emp_query Function
+emp_query_caller Function
+[enterprisedb@training ~]$ psql -p 5445 edb
+emp_sal_trig_emp Function
+edb=# select version();
+hire_clerk Function
+PostgreSQL 17.2 (EnterpriseDB EDB Postgres
+hire_salesman Function
+Advanced Server 17.2.0) on x86_64-pc-linux-gnu,
+compiled by gcc (GCC) 11.5.0 20240719 (Red Hat list_emp Function
+11.5.0-2), 64-bit
+new_empno Function
+select_emp Function
+edb=# show data_directory;
+data_directory user_audit_trig_em
+--------------------------- p Function
+/home/enterprisedb/data17
+next_empno Sequence
+(1 row)
+dept Table
+emp Table
+jobhist Table
+salesemp Table
+salesemp View
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Upgrading Best Practices
+ Enterprise Postgres upgrade is not automatic
+ Run pg_upgrade with --check option for any upgrade issues
+ Take a full backup before and after upgrade
+ If --link option is used with pg_upgrade, it’s unsafe to start old cluster
+ Check for failed rebuild, and reindex cases reported by pg_upgrade
+ Watch for post-upgrade warnings generated by pg_upgrade and run the generated
+script on new database as Superuser
+ Do not stop or abort the upgrade process once started
+ In a streaming replication environment, replica server also needs upgrade
+ Once verified, remove old cluster footprints
+290
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ Version Change and Upgrade
+ Need to Upgrade
+ Upgrade Plan
+ Upgrade Using pg_upgrade
+ Upgrading Best Practices
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Conclusion
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Course Summary
+ Introduction  Table Partitioning
+ Database Monitoring  Connection Pooling
+ SQL Tuning  Cloning
+ Performance Tuning  Transparent Data Encryption
+ Benchmarking  Upgrading Best Practices
+ Extensions
+293
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Thank you!
+Please visit our Training Portal for
+more courses and workshops!
+©©©EEEDDDBBB 222000222555 ——— AAALLLLLL RRRIIIGGG HHHTTTSSS RRREEESSSEEERRRVVVEEEDDD...
+

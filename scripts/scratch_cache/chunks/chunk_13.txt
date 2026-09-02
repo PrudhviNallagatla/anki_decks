@@ -1,0 +1,650 @@
+Source PDF: EDB Postgres AI Database Essentials v17_Student_144dpi_75%.pdf
+Pages: 251 to 300
+========================================
+
+DML Statements
+Statement Syntax
+INSERT INTO table_name [ ( column_name [, ...] ) ]
+INSERT
+{ DEFAULT VALUES | VALUES ( { expression | DEFAULT } [, ...] ) [,...] | query }
+UPDATE [ ONLY ] table_name
+UPDATE SET column_name = { expression | DEFAULT }
+[ WHERE condition]
+DELETE FROM [ ONLY ] table_name
+DELETE
+[ WHERE condition ]
+SELECT [ ALL | DISTINCT ] [ * | expression ]
+SELECT
+[FROM table [,.. ]
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+DCL Statements
+Statement Syntax
+GRANT { { SELECT | INSERT | UPDATE ……} [, … ] | ALL [PRIVILEGES ] }
+GRANT ON { [ TABLE ] table_name [, …] | ALL TABLES IN SCHEMA schema_name [ ,…] }
+TO role_specification [, …] [ WITH GRANT OPTION ]
+REVOKE [ GRANT OPTION FOR ]
+{ { SELECT | INSERT | UPDATE ……} [, … ] | ALL [PRIVILEGES ] }
+REVOKE
+ON { [ TABLE ] table_name [, …] | ALL TABLES IN SCHEMA schema_name [ ,…] }
+FROM { [ GROUP ] role_name | PUBLIC } [, …]
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Transaction Control Language
+Statement Syntax
+COMMIT COMMIT [ WORK | TRANSACTION ]
+ROLLBACK ROLLBACK [ WORK | TRANSACTION ]
+SAVEPOINT SAVEPOINT savepoint_name
+SET TRANSACTION SET TRANSACTION transaction_mode [, …]
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Objects
+Object Description
+TABLE Named collection of rows
+VIEW Virtual table, can be used to hide complex queries
+SEQUENCE Used to automatically generate integer values that follow a pattern
+INDEX A common way to enhance query performance
+DOMAIN A data type with optional constraints
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Tables
+ A table is a named collection of rows
+ Each table row has same set of columns
+ Each column has a data type
+ Tables can be created using the CREATE TABLE statement
+ Syntax:
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Types of Constraints
+ Constraints are used to enforce data integrity
+ Enterprise Postgres supports different types of constraints:
+ NOT NULL
+ CHECK
+ UNIQUE
+ PRIMARY KEY
+ FOREIGN KEY
+ Constraints can be defined at the column level or table level
+ Constraints can be added to an existing table using the ALTER TABLE statement
+ Constraints can be declared DEFERRABLE or NOT DEFERRABLE
+ Constraints prevent the deletion of a table if there are dependencies
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Views
+ A View is a Virtual Table and can be used to hide complex queries
+ Can also be used to represent a selected view of data
+ Simple views are updatable and allow non-updatable columns
+ Views can be created using the CREATE VIEW statement
+ Syntax:
+=> CREATE [ OR REPLACE ] VIEW name [ ( column_name [, ...] ) ]
+[ WITH ( view_option_name [= view_option_value] [, ... ] ) ]
+AS query
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Sequences
+ A sequence is used to automatically generate integer values that follow a
+pattern
+ A sequence has a name, start point and an end point
+ Sequence values can be cached for performance
+ Sequence can be used using CURRVAL and NEXTVAL functions
+ Syntax:
+=> CREATE SEQUENCE name [ INCREMENT [ BY ] increment ]
+[ MINVALUE minvalue] [ MAXVALUE maxvalue]
+[ START [ WITH ] start ] [ CACHE cache ] [ [ NO ] CYCLE ]
+[ OWNED BY { table_name.column_name | NONE } ]
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Domains
+ A domain is a data type with optional constraints
+ Domains can be used to create a data type which allows a selected list of values
+Table: emp
+Column: cityname
+Data Type: city
+Domain: city Table: shop
+Allowed Values: Edmonton, Column: shoplocation
+Calgary, Red Deer Data Type: city
+Table: clients
+Column: res_city
+Data Type: city
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Types of JOINS
+Type Description
+INNER JOIN Returns all matching rows from both tables
+Returns all matching rows and rows from left-hand table even if there is no
+LEFT OUTER JOIN
+corresponding row in the joined table
+Returns all matching rows and rows from right-hand table even if there is
+RIGHT OUTER JOIN
+no corresponding row in the joined table
+FULL OUTER JOIN Returns all matching as well as not matching rows from both tables
+CROSS JOIN Returns all rows of both tables with Cartesian product on number of rows
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Using SQL Functions
+ Can be used in SELECT statements and WHERE clauses
+ Includes
+ String Functions
+ Format Functions
+ Date and Time Functions
+ Aggregate Functions
+ Example:
+=> SELECT lower(name)FROM departments;
+=> SELECT * FROM departments
+WHERE lower(name) = 'development';
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+SQL Format Functions
+Function Return Type Description Example
+convert time stamp to to_char(current_timestamp,
+to_char(timestamp, text) text
+string 'HH12:MI:SS')
+convert interval to to_char(interval '15h 2m 12s',
+to_char(interval, text) text
+string 'HH24:MI:SS')
+convert integer to
+to_char(int, text) text to_char(125, '999')
+string
+to_char(double real/double precision to
+text to_char(125.8::real, '999D9')
+precision, text) strconvert ing
+convert numeric to
+to_char(numeric, text) text to_char(-125.8, '999D99S')
+string
+to_date('05 Dec 2000',
+to_date(text, text) date convert string to date
+'DD Mon YYYY')
+convert string to to_number('12,454.8-',
+to_number(text, text) numeric
+numeric '99G999D9S')
+timestamp with convert string to time to_timestamp('05 Dec 2000',
+to_timestamp(text, text)
+time zone stamp 'DD Mon YYYY')
+to_timestamp(double timestamp with convert Unix epoch to
+to_timestamp(1284352323)
+precision) time zone time stamp
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Execution Plan
+ An execution plan shows the detailed steps necessary to execute a SQL statement
+ Planner is responsible for generating the execution plan
+ The Optimizer determines the most efficient execution plan
+ Optimization is cost-based, cost is estimated resource usage for a plan
+ Cost estimates rely on accurate table statistics, gathered with ANALYZE
+ Costs also rely on seq_page_cost, random_page_cost, and others
+ The EXPLAIN command is used to view a query plan
+ EXPLAIN ANALYZE is used to run the query to get actual runtime stats
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Execution Plan Components
+ Syntax:
+ Execution Plan Components:
+EXPLAIN [ ( option [, ...] ) ] statement
+where option can be one of:
+ Cardinality - Row Estimates
+ANALYZE [ boolean ]
+VERBOSE [ boolean ]
+ Access Method - Sequential or Index
+COSTS [ boolean ]
+SETTINGS [ boolean ]
+ Join Method - Hash, Nested Loop etc.
+GENERIC_PLAN [ boolean ]
+BUFFERS [ boolean ]
+ Join Type, Join Order SERIALIZE [ { NONE | TEXT | BINARY } ]
+WAL [ boolean ]
+ Sort and Aggregates TIMING [ boolean ]
+SUMMARY [ boolean ]
+MEMORY [ boolean ]
+FORMAT { TEXT | XML | JSON | YAML }
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Explain Example
+ Example
+postgres=# EXPLAIN SELECT * FROM emp;
+QUERY PLAN
+------------------------------------------------------
+Seq Scan on emp (cost=0.00..1.14 rows=14 width=145)
+ The numbers that are quoted by EXPLAIN are:
+ Estimated start-up cost
+ Estimated total cost
+ Estimated number of rows output by this plan node
+ Estimated average width (in bytes) of rows output by this plan node
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM - Query Tool’s Visual Explain
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Quoting
+ Single quotes and dollar quotes are used to specify non-numeric values
+ Example:
+'hello world'
+'2011-07-04 13:36:24'
+'{1,4,5}'
+$$A string "with" various 'quotes' in.$$
+$foo$A string with $$ quotes in $foo$
+ Double quotes are used for names of database objects which either clash with keywords,
+contain mixed case letters, or contain characters other than a-z, 0-9 or underscore
+ Example:
+SELECT * FROM "select“
+CREATE TABLE "HelloWorld" ...
+SELECT * FROM "Hi everyone and everything"
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Indexes
+ Indexes are a common way to enhance performance
+ Postgres supports several index types:
+Block Range
+B-tree SP-GiST Index on
+Hash Index (BRIN) GIN GIST
+(default) Indexes Expressions
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example Index
+ Syntax:
+CREATE [ UNIQUE ] INDEX [ CONCURRENTLY ] [ [ IF NOT EXISTS ] name ] ON [ ONLY ] table_name [ USING method ]
+( { column_name | ( expression ) | constant } [ COLLATE collation ] [ opclass [ ( opclass_parameter =
+value [, ... ] ) ] ] [ ASC | DESC ] [ NULLS { FIRST | LAST } ] [, ...] )
+[ INCLUDE ( column_name [, ...] ) ]
+[ NULLS [ NOT ] DISTINCT ]
+[ WITH ( storage_parameter [= value] [, ... ] ) ]
+[ LOGGING | NOLOGGING ]
+[ LOCAL ]
+[ TABLESPACE tablespace_name ]
+[ PARALLEL [ integer | ( degree {integer | DEFAULT } ) ] | NOPARALLEL ]
+[ WHERE predicate ]
+ Example:
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Oracle Compatibility and
+Migration
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Oracle Compatibility
+ Oracle compatibility helps an application running in an Oracle environment to run in an
+Enterprise Postgres environment with minimal or no changes
+ Oracle Compatibility in Enterprise Postgres offers:
+Oracle Compatible Oracle Compatible Stored Procedure
+Data types SQL statements
+Tools Catalog Views Language (SPL)
+Open Client Library
+Built-in Packages Triggers Table Partitioning Optimizer Hints (OCL) for Oracle
+Call Interface (OCI)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Oracle Compatible Tools
+EDB*Plus
+Loader
+EDB*Wrap
+Oracle DBA Enterprise Postgres
+DRITA (Oracle Compatible)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Table Partitioning
+ Table partitioning can be used to break one logically large table into smaller
+physical pieces
+ Enterprise Postgres supports Oracle compatible syntax for table partitioning
+with support for:
+ List Partitioning
+ Range Partitioning
+ Hash Partitioning
+ Sub Partitioning
+ Interval Partitioning
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Stored Procedure Language
+ SPL is the procedural language extension to SQL
+ SPL is compatible with Oracle PL/SQL
+ Can be used to create functions, procedures and packages
+ Can be used to create sub-programs like sub-procedures and sub-functions inside
+standalone SPL Programs
+ Provides procedural constructs such as:
+ Variables, constants, and types
+ Conditional statements
+ Dynamic SQL
+ Cursors
+ Triggers
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Built-in Packages
+ Enterprise Postgres provides built-in packages compatible with Oracle
+ Over 24 most commonly used Oracle built-in packages are available in Enterprise Postgres
+ These built-in packages provide administration and maintenance utilities
+DBMS_ALERT DBMS_AQ DBMS_AQADM DBMS_CRYPTO DBMS_JOB
+DBMS_LOB DBMS_LOCK DBMS_MVIEW DBMS_OUTPUT DBMS_PIPE
+DBMS_PROFILER DBMS_RANDOM DBMS_RLS DBMS_SESSION DBMS_SCHEDULER
+DBMS_SQL DBMS_UTILITY DBMS_REDACT UTL_ENCODE UTL_FILE
+UTL_HTTP UTL_MAIL UTL_SMTP UTL_URL UTL_RAW
+DBMS_PIVILEGE_
+DBMS_ASSERT DMBS_XLMDOM HTP and HTF
+CAPTURE
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Migration Process
+Identify Use Migration Results,
+Assessment candidate Portal for Solutions,
+database(s) Assessment Plan
+Migrate the
+Database
+Prepare Migrate the
+schema
+Migration environments data
+definition
+Application
+Connect the Test and
+Revise
+Migration application Verify
+Deployment Monitor Manage Tune
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Migration Portal
+ Migration Portal Combines:
+ Native Oracle Compatibility
+ Schemas
+ DB Code
+ Application interfaces
+ Rich knowledge base from 10+ years of migrations
+ Cloud-based machine learning of new code translations
+ Supports assessment and migration from Oracle 11g to 19c to EDB Advanced Server 13 to 17
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Migration Toolkit
+CLI
+ MTK is a powerful command
+- runMTK
+line tool
+Toolkit Properties
+source
+target
+drivers
+ It simplifies the process of
+…
+migrating from other
+databases to Enterprise Read database Migration Toolkit
+catalogues
+Postgres DDL Extractor Write database
+catalogues
+DDL Converter
+ The Migration Toolkit can be Data Loader
+Read data Write data
+used to migrate the entire (JDBC or OCI) (JDBC or libpq)
+Source Target
+schema including triggers and Database Database
+Write DDL and
+stored procedures
+Offline
+data to file for
+Migration
+offline migration
+DDL
+Data
+…
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Migration using Replication Server
+ Replicate Oracle or SQL Server Single Master Replication (SMR) between
+Oracle and Enterprise Postgres for Migration
+data to Enterprise Postgres
+Source
+ Distributed multi-
+EDB Advanced Server
+Publication/Subscription
+PostgreSQL Read/write
+Architecture Oracle©
+SQL Server©
+ Synchronize data across  Data Filtering
+geographies
+ Scheduling
+ Replicate selected tables and EDB Advanced Server
+PostgreSQL Read
+sequences
+Oracle©
+SQL Server©
+Target
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ Data Types  Domains
+ Structured Query Language (SQL)  SQL Joins and Functions
+ DDL, DML and DCL Statements  Explain Plans
+ Transaction Control Statements  Quoting in PostgreSQL
+ Tables and Constraints  Indexes
+ Views and Materialized Views  Oracle Compatibility and Tools
+ Sequences
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 1
+ Test your knowledge:
+1. Initiate a psql session
+2. edb-psql commands access the database True/False
+3. The following SELECT statement executes successfully: True/False
+=> SELECT ename, job, sal AS Salary FROM emp;
+4. The following SELECT statement executes successfully: True/False
+=> SELECT * FROM emp;
+5. There are coding errors in the following statement. Can you identify them?
+=> SELECT empno, ename, sal * 12 annual salary FROM emp;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 2
+ The staff in the HR department wants to hide some of the data in the EMP table.
+They want a view called EMPVU based on the employee numbers, employee
+names, and department numbers from the EMP table. They want the heading
+for the employee name to be EMPLOYEE.
+ Confirm that the view works. Display the contents of the EMPVU view.
+ Using your EMPVU view, write a query for the SALES department to display all
+employee names and department numbers.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 3
+ You need a sequence that can
+be used with the primary key
+column of the dept table.
+The sequence should start at
+60 and have a maximum
+value of 200. Have your
+sequence increment by 10.
+Name the sequence
+dept_id_seq.
+ To test your sequence, write a
+script to insert two rows in
+the dept table.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Backup, Recovery
+and PITR
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ Backup Types
+ Database SQL Dumps
+ Restoring SQL Dumps
+ Offline Physical Backups
+ Continuous Archiving
+ Online Physical Backups Using pg_basebackup
+ Point-in-time Recovery
+ Recovery Settings
+ Backup Tools – Barman and pgBackRest
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Types of Backup
+ As with any database, PostgreSQL databases should be backed up regularly
+Logical Backups
+ Database SQL Dumps using pg_dump
+ Database Cluster SQL Dump using pg_dumpall
+Physical Backups
+ Offline File System Level Backups using OS commands
+ Online File System Level Backups using pg_basebackup
+ Backup Tool – Barman and pgBackRest
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database SQL Dump
+ Generate a text file with SQL commands
+ Enterprise Postgres provides the utility program pg_dump for this purpose
+ pg_dump does not block readers or writers
+ pg_dump does not operate with special permissions
+ Dumps created by pg_dump are internally consistent, that is, the dump
+represents a snapshot of the database as of the time pg_dump begins running
+ Syntax:
+$ pg_dump [options] [dbname]
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pg_dump Options
+-a - Data only. Do not dump the data definitions (schema)
+-s - Data definitions (schema) only. Do not dump the data
+-n <schema> - Dump from the specified schema only
+-t <table> - Dump specified table only
+-f <file name> - Send dump to specified file. Filename can be specified using absolute or relative location
+-Fp - Dump in plain-text SQL script (default)
+-Ft - Dump in tar format
+-Fc - Dump in compressed, custom format
+-Fd - Dump in directory format
+-j njobs - dump in parallel by dumping n jobs tables simultaneously. Only supported with –Fd
+-B, --no-blobs - Excludes large objects in dump
+-v - Verbose option
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+SQL Dump - Large Databases
+ If the operating system has maximum file size limits, it can cause problems
+when creating large pg_dump output files
+ Standard Unix tools can be used to work around this potential problem
+ Use a compression program, for example gzip:
+$ pg_dump dbname | gzip > filename.gz
+ The split command allows you to split the output into smaller files:
+$ pg_dump dbname | split -b 1m - filename
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Restore – SQL Dump
+psql client pg_restore utility
+ Backups taken using pg_dump  Backup taken using pg_dump
+with plain text format(Fp) with custom(Fc), tar(Ft) or
+director(Fd) formats
+ Backups taken using pg_dumpall
+ Supports parallel jobs for during
+restore
+ Selected objects can be restored
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pg_restore Options
+-l - Display TOC of the archive file
+-F [c|d|t] - Backup file format
+-d <database name> - Connect to the specified database. Also restores to this database if -C option is omitted
+-C - Create the database named in the dump file and restore directly into it
+-a - Restore the data only, not the data definitions (schema)
+-s - Restore the data definitions (schema) only, not the data
+-n <schema> - Restore only objects from specified schema
+-N <schema> - do not restore objects in this schema
+-t <table> - Restore only specified table
+-v - Verbose option
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Entire Cluster - SQL Dump
+ pg_dumpall is used to dump an entire database cluster in plain-text SQL format
+ Dumps global objects - users, groups, and associated permissions
+ Use psql to restore
+ Syntax:
+$ pg_dumpall [options…] > filename.backup
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pg_dumpall Options
+-a - Data only. Do not dump schema
+-s - Data definitions (schema) only
+-g - Dump global objects only - not databases
+-r - Dump only roles
+-c - Clean (drop) databases before recreating
+-O - Skip restoration of object ownership
+-x - do not dump privileges (grant/revoke)
+-v - Verbose option
+--disable-triggers - disable triggers during data-only restore
+--no-role-passwords - do not dump passwords for roles. This allows use of pg_dumpall by non-superusers
+--exclude-database -exclude database whose name match with given pattern
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Physical Backup - File system level backup
+ An alternative backup strategy is to directly copy the files that Postgres uses to store the
+data in the database
+ You can use whatever method you prefer for doing usual file system backups, for example:
+$ tar -cf backup.tar /usr/local/edb/data
+ The database server must be shut down or in backup mode in order to get a usable backup
+ File system backups only work for complete backup and restoration of an entire database
+cluster
+ Two types of File system backup
+ Offline backups
+ Online backups
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+File System Backups
+Offline Backups
+ Taken using OS Copy command
+ Database Server must be shutdown
+ Cluster Level Backup and Restore
+Online Backups
+ Continuous archiving must be enabled
+ Database server start/end backup mode
+ Cluster Level Backup and Restore with PITR
+ Methods - pg_basebackup, Barman, pgBackRest
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Continuous Archiving
+ Postgres maintains WAL files for all transactions in pg_wal directory
+ Postgres automatically maintains the WAL logs which are full and switched
+ Continuous archiving can be setup to keep a copy of switched WAL Logs
+which can be later used for recovery
+ It also enables online file system backup of a database cluster
+ Requirements:
+ wal_level must be set to replica
+ archive_mode must be set to on (can be set to always)
+ archive_command must be set in postgresql.conf which archives WAL logs and supports PITR
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Continuous Archiving Methods
+Parameters in postgresql.conf file
+wal_level = replica
+Archiver Process archive_mode = on
+archive_command = ‘cp -i %p /edb/archive/%f’
+Restart the database server
+Archive files are generated after every log switch
+Parameters in postgresql.conf file
+wal_level = replica
+archive_mode = on
+Streaming WAL max_wal_senders = 3
+Restart the database server
+pg_receivewal –h localhost –D /edb/archive
+Transactions are streamed and written to archive files
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Base Backup Using pg_basebackup Tool
+ pg_basebackup can take an online base backup of a database cluster
+ This backup can be used for PITR or Streaming Replication
+ pg_basebackup makes a binary copy of the database cluster files
+ System is automatically put in and out of backup mode
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pg_basebackup - Online Backup
+ Steps require to take Base Backup:
+ Modify pg_hba.conf
+host replication enterprisedb [Ipv4 address of client]/32 md5
+ Modify postgresql.conf
+wal_level = replica
+archive_command = 'cp -i %p /users/enterprisedb/archive/%f‘
+archive_mode = on
+max_wal_senders = 3
+wal_keep_size = 512
+ Backup Command:
+$ pg_basebackup [options] ..
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Options for pg_basebackup command
+-D <directory name> - Location of backup
+-F <p or t> - Backup files format. Plain(p) or tar(t)
+-i, --incremental=OLDMANIFEST -Take an incremental backup
+-R - write standby.signal and append postgresql.auto.conf
+-T OLDDIR=NEWDIR - relocate tablespace in OLDDIR to NEWDIR
+--waldir - Write ahead logs location
+-z - Enable compression(tar) for files
+-Z - Compress backup based on setting set to none, client or server
+-P - Progress Reporting
+-h host - host on which cluster is running
+-p port - cluster port
+ To create a full backup of the server at localhost and store it in the local
+directory /usr/local/edb/backup
+$ pg_basebackup -h localhost -D /usr/local/edb/backup
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+

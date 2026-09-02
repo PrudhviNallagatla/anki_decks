@@ -1,0 +1,535 @@
+Source PDF: EDB Postgres AI Database Advanced v17_Student_144dpi_75%.pdf
+Pages: 101 to 150
+========================================
+
+Step 3 - Review Optimizer
+Statistics and Behavior
+©©EEDDBB 22002255 —— AALLLL RRIIGGHHTTSS RREESSEERRVVEEDD..
+
+Optimizer Statistics
+ The Postgres Optimizer and Planner use
+table statistics for generating query plans
+ Choice of query plans are only as good
+as table stats
+ Table statistics
+ Stored in catalog tables like pg_class and
+pg_stats
+ Stores row sampling information
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Updating Planner Statistics
+Absolutely critical to have accurate statistics to ensure optimal query plans
+Are not updated in real time, so should be manually updated after bulk operations
+Can be updated using ANALYZE command or OS command vacuumdb with -Z option
+Stored in pg_class and pg_statistics
+You can run the ANALYZE command from psql on specific tables and just specific columns
+Autovacuum will run ANALYZE on tables as configured
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+ANALYZE Command
+ Postgres collects and updates statistics for each table using ANALZE
+command
+ ANALYZE command can also be run in conjunction with the VACUUM
+command
+ Syntax for ANALYZE command:
+ ANALYZE [options] table_name [ ( column_name [, ...] ) ]
+ Where options can be:
+ VERBOSE [ boolean ]
+ SKIP_LOCKED [ boolean ]
+ BUFFER_USAGE_LIMIT [ size ]
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Controlling Statistics Collection
+ Postgres gathers and maintains table and column level statistics
+ Statistics collection level can be controlled using:
+ =# ALTER TABLE <table> ALTER COLUMN <column> SET
+ STATISTICS <number>;
+ The <number> can be set between 1 and 10000
+ A higher <number> will signal the server to gather and update more
+statistics but may have slow autovacuum and analyze operation on
+stat tables. Higher numbers only useful for tables with large irregular
+data distributions
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Extended Statistics
+ Postgres stores column-specific statistics lacking awareness of inter-column
+relationships
+ Understanding of relationships between different columns can help during
+query optimization
+ Extended statistics created using “CREATE STATISTICS” empower Postgres to
+comprehend inter-column relationships
+ This improves query optimization by offering additional insights to the planner
+ Extended statistics are vital for addressing cross-column correlation challenges
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - Extended Statistics
+ Create a table  Update statistics and view explain plan
+ANALYZE items;
+CREATE TABLE items (
+EXPLAIN ANALYZE SELECT * FROM items WHERE
+item_id INTEGER PRIMARY KEY, price > 30 AND quantity < 120;
+QUERY PLAN
+price NUMERIC,
+--------------------------------------------
+quantity INTEGER,
+Seq Scan on items (cost=0.00..87018.26
+rows=757286 width=21) (actual time=139.089..
+category VARCHAR(30)
+1192.178 rows=1000000 loops=1)
+);
+Filter: ((price > '30'::numeric) AND
+ Insert sample data (quantity < 120))
+Rows Removed by Filter: 3000000
+ INSERT INTO items VALUES
+(generate_series(1,1000000),18.99, 200, 'Speaker’);
+Planning Time: 0.165 ms
+ INSERT INTO items VALUES Execution Time: 1828.823 ms
+(generate_series(1000001,2000000),31.99, 100, 'TV’);
+(5 rows)
+ INSERT INTO items VALUES
+(generate_series(2000001,3000000),29.99, 100, 'TV’);
+ INSERT INTO items VALUES
+(generate_series(3000001,4000000),29.99, 100, 'Camera');
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - Extended Statistics
+ Create extended statistics EXPLAIN ANALYZE SELECT * FROM items
+WHERE price > 30 AND quantity < 120;
+CREATE STATISTICS prc_qnt_rel QUERY PLAN
+ON price,quantity FROM items;
+---------------------------------Seq Scan
+on items (cost=0.00..86462.00 rows=984267
+width=21) (actual time=138.165..
+1184.710 rows=1000000 loops=1)
+ Analyze the table
+Filter: ((price > '30'::numeric) AND
+(quantity < 120))
+ANALYZE items;
+Rows Removed by Filter: 3000000
+Planning Time: 0.166 ms
+Execution Time: 1823.448 ms
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Step 4 - Restructuring SQL
+Statements and Optimizer Hints
+©©EEDDBB 22002255 —— AALLLL RRIIGGHHTTSS RREESSEERRVVEEDD..
+
+Restructure SQL Statements
+Rewriting inefficient SQL is often easier than repairing it
+Avoid implicit type conversion
+Avoid expressions as the optimizer may ignore the indexes on such columns
+Use equijoins wherever possible to improve SQL efficiency
+Try changing the access path and join orders with hints
+Avoid full table scans if using an index is more efficient
+The join order can have a significant effect on performance
+Use views or materialized views for complex queries
+Use parallel query scans to improve the query performance
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Optimizer Hints
+ Optimizer hints are directives
+embedded in comment-like syntax
+immediately following the DELETE,
+INSERT, SELECT or UPDATE
+ Optimizer hints can alter execution
+plans
+ Optimizer hints are used to directly
+influence selection of all or part of the
+final plan
+ Optimizer hints influence optimizer
+decisions
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Embedding Optimizer Hints
+ Optimizer hints may be given in
+two different formats:
+{ DELETE | INSERT | SELECT |
+UPDATE } /*+ { hint [ comment
+] } [...] */ statement_body
+{ DELETE | INSERT | SELECT |
+UPDATE } --+ { hint [ comment
+] } [...] statement_body
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Usage Description
+ Planner parameters override optimizer hints
+ Hints must be placed immediately after the first statement keyword
+ If the hint is misspelled in the SQL command, there will be no indication that any
+sort of error has occurred
+ If an alias is used for a table or view name in the SQL command, then the alias
+name, not the original object name, must be used in the hint
+ Hints apply only to the statement where it is specified
+ Use EXPLAIN to ensure that hints are correctly used
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Access Method Hints
+ The following hints influence how the optimizer accesses relations to create the
+result set:
+Hint Description
+FULL (table) Perform a full sequential scan on table
+INDEX (table [index] […]) Use index on table to access the relation
+NO_INDEX (table [index] […]) Do not use index on table to access the relation
+ The FULL hint is used to force a full sequential scan instead of using the index:
+=# EXPLAIN SELECT /*+ FULL(accounts) */ * FROM
+accounts WHERE aid = 100;
+ The NO_INDEX hint also forces a sequential scan
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Join Hints
+ There are three possible plans that may be used to perform a join between two
+tables:
+ Nested Loop Join, Merge Sort Join and Hash Join
+Hint Description
+USE_HASH(table […]) Use a hash join with a hash table created from the join attributes of table
+NO_USE_HASH(table […]) Do not use a hash join created from the join attributes of table
+USE_MERGE(table […]) Use a merge sort join for table
+NO_USE_MERGE(table […]) Do not use a merge sort join for table
+USE_NL(table […]) Use a nested loop join sort for table
+NO_USE_NL(table […]) Do not use a nested loop join sort for table
+ Example:
+=# EXPLAIN SELECT /*+ USE_HASH(a) */ b.bid, a.aid, abalance FROM
+branches b, accounts a WHERE b.bid = a.bid;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+APPEND Optimizer Hint
+ By default, Postgres will add new data into the first available free-space
+ Use APPEND optimizer hint with INSERT or SELECT for adding new rows at the
+end of the table
+ This is useful when bulk loading data
+ Example:
+=# INSERT /*+APPEND*/ INTO sales VALUES (10, 10, '01-SEP-2014', 10, 'OR');
+=# INSERT INTO sales_history SELECT /*+APPEND*/ FROM sales;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Parallelism Hints
+ Parallel scanning provides performance improvement over sequential scan
+ The PARALLEL optimizer hint is used to force parallel scanning
+ The NO_PARALLEL optimizer hint prevents usage of a parallel scan
+ Syntax:
+PARALLEL (table [ parallel_degree | DEFAULT ])
+NO_PARALLEL (table)
+ Example:
+=# EXPLAIN SELECT /*+ PARALLEL(pgbench_accounts) */ * FROM pgbench_accounts;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Step 5 - Review Indexes
+©©EEDDBB 22002255 —— AALLLL RRIIGGHHTTSS RREESSEERRVVEEDD..
+
+General Indexing Guidelines
+ Create indexes only when needed
+ Remove unused indexes
+ Adding an index for one SQL can
+slow down other queries
+ Verify index usage using the
+EXPLAIN command
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Indexes
+Indexes Description
+B-tree Equality and range queries on data that can be sorted (Default index type)
+Hash Only simple equality comparisons
+GiST Can be used depending on the indexing strategy (the operator class)
+SP-GiST Like GiST, offer an infrastructure that supports various kinds of searches
+GIN Can handle values that contain more than one key, for example arrays
+Accelerates scanning of large tables by maintaining summary data about block
+BRIN (Block
+ranges. Very small index size compared to B-Tree, the tradeoff being you can’t select a
+Range Index)
+specific row so they are not useful for all data sets
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Multicolumn Indexes
+ An index can be defined on more than one column of a table
+ Currently, only the B-tree, GiST, and GIN index types support multicolumn
+indexes
+ Example:
+=> CREATE INDEX test_idx1 ON test (id_1, id_2);
+ This index will be used when you write:
+=> SELECT * FROM test WHERE id_1=1880 AND id_2= 4500;
+ Multicolumn indexes should be used sparingly
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Indexes and ORDER BY
+ You can adjust the ordering of a B-tree index by including the options ASC,
+DESC, NULLS FIRST, and/or NULLS LAST when creating the index to
+save sorting time spent by the query
+ By default, B-tree indexes store their entries in ascending order with nulls last
+ Examples:
+=# CREATE INDEX test2_info_nulls_low ON test2 (info NULLS FIRST);
+=# CREATE INDEX test3_desc_index ON test3 (id DESC NULLS LAST);
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Unique Indexes
+ Indexes can also be used to enforce
+uniqueness of a column's value or the
+uniqueness of the combined values of more
+than one column
+=> CREATE UNIQUE INDEX name ON table
+(column [, ...]);
+ Currently, only B-tree indexes can be declared unique
+ Postgres automatically creates a unique
+index when a unique constraint or primary
+key is defined for a table
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Functional Indexes
+ An index can be created on a computed value from the table columns.
+ For example:
+=> CREATE INDEX test1_lower_col1_idx ON test1 (lower(col1));
+ Index expressions are relatively expensive to maintain
+ Indexes on expressions are useful when retrieval speed is more important than
+insertion and update speed
+ Indexes can also be created on user defined functions
+ ALTER INDEX ALTER COLUMN SET STATISTICS can be used to set
+statistic target for index columns that are defined as expression
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Partial Indexes
+ A partial index is an index built over a subset of a table.
+ The index contains entries only for those table rows that satisfy the predicate.
+ Example:
+edbstore=> CREATE TABLE citizen (id int, name varchar(50), city varchar(30),
+state varchar(20));
+CREATE TABLE
+edbstore=> CREATE INDEX citizen_state_idx_AR ON citizen(id) WHERE state='AR';
+CREATE INDEX
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+BRIN Indexes
+BRIN (Block Range Index) stores metadata on range (min and max)
+of pages
+Block Range is by default set to 1MB and can be modified using
+pages_per_range parameter
+BRIN is small in size, easier to maintain and eliminates disk I/O by
+storing summary of data distribution on disk
+Designed to handle large table columns, which correlate to the
+physical location within the table
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - BRIN Indexes
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Index Only Scans
+ Indexes speed up data retrieval and
+sorting by storing indexed column
+value and pointers in index pages
+ If all the columns fetched by a
+query are indexed, PostgreSQL can
+perform an index only scan
+ Index-only scan is a faster version
+of the ordinary index scan
+ Any non-key column can also be
+included with indexed column in the
+index page using INCLUDE option
+of CREATE INDEX statement
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Examining Index Usage
+ It is difficult to formulate a general
+procedure for determining which
+indexes to create.
+ Always run ANALYZE first.
+ Use real data for experimentation.
+ When indexes are not used, it can be
+useful for testing to force their use.
+ The EXPLAIN ANALYZE command can
+be useful here.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Step 6 - Review Final Execution
+Plan
+©©EEDDBB 22002255 —— AALLLL RRIIGGHHTTSS RREESSEERRVVEEDD..
+
+Last Step - Review the Final Plan
+ Check again for missing indexes
+ Check table statistics are showing correct estimates
+ Check large table sequential scans
+ Compare the cost of first and final plans
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 1
+ You are working as a DBA. Users are complaining about long running queries
+and high execution times. Configure your database instance to log slow
+queries. Any query taking more than 5 seconds must be logged.
+ After logging slow queries, you find the following query taking longer than
+expected:
+=> SELECT * FROM customers JOIN orders USING(customerid);
+ View the explain plan of the above query.
+ View the execution time for the above query in psql terminal.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 2
+ Create a table using following queries:
+ CREATE TABLE lab_test1 (c1 int4, c2 int4);
+ INSERT INTO lab_test1(c1, c2) values(generate_series(1, 100000), 1);
+ INSERT INTO lab_test1(c1, c2) values(generate_series(100001, 200000), 2);
+ INSERT INTO lab_test1(c1, c2) values(generate_series(200001, 300000), 3);
+ Create three partial indexes on lab_test1 table as following:
+Index Name Predicate
+idx1_c1 c1 between 1 and 100000
+idx2_c1 c1 between 100001 and 200000
+idx3_c1 c1 between 200001 and 300000
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 3
+ Detect the index usage for all the
+user indexes in edbstore database.
+ Reindex all the indexes.
+ Manually update the statistics for
+all the objects in edbstore
+database.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Performance Tuning
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Module Objectives
+ Parameter Tuning in Postgres
+ Hot cache vs cold cache
+ Data Loading best practices
+ Tuning Postgres Using PEM
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Performance Tuning - Overview
+ Performance Tuning is a group of activities used to optimize a database
+ Database Tuning is used to correct:
+ Poorly written SQL
+ Poor session management
+ Misconfigured database parameters
+ Operating system I/O issues
+ No Database maintenance
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+The Performance Tuning Process
+ Identify the information relevant to
+diagnosing performance problems
+ Collect that information on a
+regular basis
+ Expert analysis is needed to
+understand and correlate all the Information Implementing
+Analysis
+relevant statistics together Collection Solution
+ Multiple solutions for different
+problems
+ Use your own judgment to
+prioritize and quantify the
+solutions by impact
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Performance Monitoring Using
+PEM
+ Postgres Enterprise Manager (PEM)
+simplifies collection of performance data
+ Automatic analysis of performance and
+diagnostics data
+ Performance Dashboards - view I/O,
+memory usage, session activity, and wait
+statistics
+ SQL Profiler - optimize slow SQL
+ Index Advisor
+ Setup alerts and thresholds
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Tuning Technique
+Check the
+Stop
+Application
+ Check OS health to  Identify the biggest
+make sure the bottleneck
+problem is in the
+ Tune the area with
+ Tune the SQL  Stop when tuning
+database
+greatest potential
+before tweaking goal is achieved
+benefit
+database
+configuration
+ Check for
+Start with sequential scans Tune Database
+Operating Server
+System Configuration
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Operating System
+Considerations
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Operating System Issues
+Memory CPU Disk (I/O)
+Increased memory demand CPU may be the bottleneck High wait times or request
+may lead to 100% memory when load or process wait is rates are symptoms of an I/O
+usage and swapping high problem
+Check memory usage Check CPU usage (%) for the Check for I/O spikes
+database connections
+Solution is to reduce memory Solution is to reduce demand
+usage or increase system Solution is to reduce CPU or increase capacity
+RAM usage (%)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM - Memory Graphs and Alerts
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM - CPU Info
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM - Disk Info
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Hardware Configuration
+Focus on disk speed and RAM over CPU speed
+ Like other RDBMS, Postgres is IO intensive
+Separate the transaction log and indexes
+ Put the database transaction log (pg_wal) on a dedicated disk resource
+ Tablespaces can be used to create indexes on separate drives
+Setup disks to match speed requirements, not just size requirements
+ IOPS is just as important as GB when purchasing hardware
+ RAID 0 + 1 is optimal for speed and redundancy
+ Consider disk speed during failures (e.g. RAID-5 parity rebuild after failed disk)
+ Write caches must be persistent battery backed “Write-Back”, or you will get corruption
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+OS Configuration
+ The filesystem makes a difference
+ A journaling file system is not required for the transaction log
+ Multiple options are available for Linux:
+EXT2 with sync enabled
+EXT3 with write-back
+EXT4 and XFS
+ Remote file systems are not recommended
+ Choose the best based on better writes, recoverability, support from multiple
+vendors and reliability
+ Eliminate unnecessary filesystem overhead, such as “noatime”
+ Consider a virtual “ram” disk for stats_temp_directory
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Server Parameter Tuning
+ Default postgresql.conf server parameters are configured for wide compatibility
+ Server parameters must be tuned to optimal values for better performance
+ Parameters can be evaluated using different methods and can be set permanently in
+the postgresql.conf file
+ Some parameters require a restart
+ Basic information needed for tuning but not limited to:
+ Database size
+ Largest table size
+ Type and frequency of queries
+ Available RAM
+ Number of concurrent connections
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM - Postgres Expert
+ Postgres Expert analyzes the server
+configuration and reports potential
+performance and security issues
+ Report also provides suggestions and
+best practices for addressing potential
+issues
+ Postgres Expert is an advisory utility
+which provides advice about
+Performance, Security and Configuration
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM - Postgres Expert Report
+Recommendations
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+

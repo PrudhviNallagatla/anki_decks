@@ -1,0 +1,644 @@
+Source PDF: EDB Postgres AI Database Essentials v17_Student_144dpi_75%.pdf
+Pages: 351 to 400
+========================================
+
+Moving Data Using
+COPY Command
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ Loading flat files
+ Import and export data using COPY
+ Examples of COPY Command
+ Using COPY FREEZE for
+performance
+ Loader
+ Data Loading Methods
+ Invoking Loader and Control File
+ Loader Exit Codes
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Loading Flat Files into
+Database Tables
+ A "flat file" is a plain text or
+mixed text file which usually
+contains one record per line
+ Enterprise Postgres offers
+two options to load flat files
+into a database table:
+ Loader
+ COPY Command
+362
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+The COPY Command
+ COPY moves data between
+Enterprise Postgres tables and
+standard file-system files
+ COPY TO copies the contents of
+a table or a query to a file
+ COPY FROM copies data from a
+file to a table
+ The file must be accessible to
+the server
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+COPY Command Syntax
+Copy From:
+ COPY table_name [(column list)] FROM 'filename'|PROGRAM 'command'|STDIN [options][WHERE cond.]
+Copy To:
+ COPY table_name[(column list])|(query) TO 'filename'|PROGRAM 'command'|STDOUT [options]
+Copy Command Options
+ FORMAT format_name
+ OIDS [ boolean ]
+ FREEZE [ boolean ]
+ DELIMITER 'delimiter_character'
+ NULL 'null_string'
+ HEADER [ boolean ]
+ QUOTE 'quote_character'
+ ESCAPE 'escape_character'
+ FORCE_QUOTE { ( column_name [, ...] ) | * }
+ FORCE_NOT_NULL ( column_name [, ...] )
+ FORCE_NULL ( column_name [, ...] )
+ ON_ERROR error_action
+ ENCODING 'encoding_name’
+ LOG_VERBOSITY verbosity
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example Export to File
+=> COPY emp (empno,ename,job,sal,comm,hiredate) TO '/tmp/emp.csv' CSV HEADER;
+COPY
+=> \! cat /tmp/emp.csv
+empno,ename,job,sal,comm,hiredate
+7369,SMITH,CLERK,800.00,,17-DEC-80 00:00:00
+7499,ALLEN,SALESMAN,1600.00,300.00,20-FEB-81 00:00:00
+7521,WARD,SALESMAN,1250.00,500.00,22-FEB-81 00:00:00
+7566,JONES,MANAGER,2975.00,,02-APR-81 00:00:00
+7654,MARTIN,SALESMAN,1250.00,1400.00,28-SEP-81 00:00:00
+7698,BLAKE,MANAGER,2850.00,,01-MAY-81 00:00:00
+7782,CLARK,MANAGER,2450.00,,09-JUN-81 00:00:00
+7788,SCOTT,ANALYST,3000.00,,19-APR-87 00:00:00
+7839,KING,PRESIDENT,5000.00,,17-NOV-81 00:00:00
+7844,TURNER,SALESMAN,1500.00,0.00,08-SEP-81 00:00:00
+7876,ADAMS,CLERK,1100.00,,23-MAY-87 00:00:00
+7900,JAMES,CLERK,950.00,,03-DEC-81 00:00:00
+7902,FORD,ANALYST,3000.00,,03-DEC-81 00:00:00
+7934,MILLER,CLERK,1300.00,,23-JAN-82 00:00:00
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example Import from File
+edb=# CREATE TEMP TABLE empcsv (LIKE emp);
+CREATE TABLE
+edb=# COPY empcsv (empno, ename, job, sal, comm, hiredate)
+edb-# FROM '/tmp/emp.csv' CSV HEADER;
+COPY
+edb=# SELECT * FROM empcsv;
+empno | ename | job | mgr | hiredate | sal | comm | deptno
+-------+--------+-----------+-----+--------------------+---------+---------+--------
+7369 | SMITH | CLERK | | 17-DEC-80 00:00:00 | 800.00 | |
+7499 | ALLEN | SALESMAN | | 20-FEB-81 00:00:00 | 1600.00 | 300.00 |
+7521 | WARD | SALESMAN | | 22-FEB-81 00:00:00 | 1250.00 | 500.00 |
+7566 | JONES | MANAGER | | 02-APR-81 00:00:00 | 2975.00 | |
+7654 | MARTIN | SALESMAN | | 28-SEP-81 00:00:00 | 1250.00 | 1400.00 |
+7698 | BLAKE | MANAGER | | 01-MAY-81 00:00:00 | 2850.00 | |
+7782 | CLARK | MANAGER | | 09-JUN-81 00:00:00 | 2450.00 | |
+7788 | SCOTT | ANALYST | | 19-APR-87 00:00:00 | 3000.00 | |
+7839 | KING | PRESIDENT | | 17-NOV-81 00:00:00 | 5000.00 | |
+7844 | TURNER | SALESMAN | | 08-SEP-81 00:00:00 | 1500.00 | 0.00 |
+7876 | ADAMS | CLERK | | 23-MAY-87 00:00:00 | 1100.00 | |
+7900 | JAMES | CLERK | | 03-DEC-81 00:00:00 | 950.00 | |
+7902 | FORD | ANALYST | | 03-DEC-81 00:00:00 | 3000.00 | |
+7934 | MILLER | CLERK | | 23-JAN-82 00:00:00 | 1300.00 | |
+(14 rows)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - COPY Command
+on Remote Host
+ COPY command on remote host
+using psql
+$ cat emp.csv | ssh 192.168.192.83
+“psql –U edbstore edbstore -c
+‘copy emp from stdin;’ “
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+COPY FREEZE
+ FREEZE is a new option in the COPY
+statement
+ Add rows to a newly created table and freezes
+them
+ Table must be created or truncated in current
+subtransaction
+ Improves performance of initial bulk load
+ Does violate normal rules of MVCC
+ Usage:
+=> COPY tablename FROM filename
+FREEZE;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Loader
+ Loader is a high-performance
+Control Discard
+bulk data loader
+File File
+ Supports Oracle SQL*Loader
+data loading methods:
+Loader
+Data File Log File
+ Conventional
+Param
+ Direct Bad File
+File
+ Parallel
+EPAS Table
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Data Loading Methods
+ Conventional path loading uses basic insert processing and is used to add rows to the table
+ Constraints, indexes and triggers are enforced during conventional path data loading
+ Direct path loading is faster than conventional path loading, but is non-recoverable
+ Direct path loading also requires removal of constraints and triggers from the table
+ Conventional path data loading is slower than direct path loading, but is fully recoverable
+ A parallel direct path load provides even greater performance
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Invoking Loader
+ Use the following command to invoke Loader from the command line:
+edbldr [-d DBNAME] [-p PORT] [-c "CONNECTION_STRING"]
+userid={dbuser[/dbpass]|/} direct={true|false} parallel={true|false}
+control=control_file_name log=log_file_name
+errors=num_errors
+skip_index_maintenance={true|false}
+skip=num_skips bad=bad_file_name parfile=par_file_name
+freeze={true|false}
+handle_conflicts={true|false}
+371
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+The Loader Control File
+ The Oracle SQL*Loader has compatible syntax for control file directives
+ The control file includes the instructions that Loader uses to build the
+table (or tables) from the input file. It includes information such as:
+ The fully qualified name of the input file
+ The name of the table or tables
+ The name of the columns within the table or tables
+ The delimiters or other selection criteria used to choose the column content
+ The fully qualified names of the bad and discarded files
+372
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Control File Syntax
+ The syntax for the Loader control file is as follows:
+[ OPTIONS (param=value [, param=value ] ...) ]
+LOAD DATA
+[ CHARACTERSET charset ]
+[ INFILE '{ data_file | stdin }' ] [ BADFILE 'bad_file' ] [ DISCARDFILE
+'discard_file' ]
+[ { DISCARDMAX | DISCARDS } max_discard_recs ]
+[ INSERT | APPEND | REPLACE | TRUNCATE ] [ PRESERVE BLANKS ]
+{ INTO TABLE target_table
+[ WHEN field_condition [ AND field_condition ] ...] [ FIELDS TERMINATED BY
+'termstring’
+[ OPTIONALLY ENCLOSED BY 'enclstring' ] ] [ RECORDS DELIMITED BY 'delimstring'
+] [ TRAILING NULLCOLS ]
+(field_def [, field_def ] ...)
+} ...
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Loader Example
+ This example loads data from a file named /tmp/mydata.csv into a table named emp
+ The data within the input file is delimited by a comma
+ Create the control file:
+LOAD DATA INFILE '/tmp/mydata.csv’
+BADFILE '/tmp/mydata.bad’
+DISCARDFILE '/tmp/mydata.dsc’
+INSERT INTO TABLE emp
+FIELDS TERMINATED BY ","
+OPTIONALLY ENCLOSED BY '”' (empno, empname, sal, deptno)
+ Run the edbldr command:
+$ edbldr -d edb CONTROL=emp.ctl BAD=/tmp/emp.bad LOG=/tmp/emp.log SKIP=1 ERRORS=10
+374
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Loader Exit Codes
+ Loader will return one of the following exit codes:
+0 Indicates that all rows loaded successfully
+1 Loader encountered syntax errors or aborted due to an unrecoverable error
+2 Load completed with some rejected or discarded rows
+3 Indicates EDB*Loaded stopped due to an OS error
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ Loading flat files
+ Import and export data using COPY
+ Examples of COPY Command
+ Using COPY FREEZE for
+performance
+ Loader
+ Data Loading Methods
+ Invoking Loader and Control File
+ Loader Exit Codes
+376
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 1
+ In this lab exercise you will
+demonstrate your ability to copy
+data:
+1. Unload the emp table from the edbuser
+schema to a csv file, with column headers
+2. Create a copyemp table with the same
+structure as the emp table
+3. Load the csv file (from step 1) into the
+copyemp table
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Replication and High
+Availability Tools
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ Data Replication
+ Data Replication in Postgres
+ Streaming Replication and Architecture
+ Synchronous, Asynchronous and
+Cascaded Replication
+ Setup Streaming Replication
+ Logical Replication Architecture
+ Replication Manager (repmgr)
+ High Availability Overview
+ Replication Server (xdb)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Data Replication
+ Replication is the process of copying data and changes to a secondary location
+for data safety and availability
+ Data loss can occur due to several reasons
+ Replication is aimed towards availability of the data when a primary source
+goes offline
+ Data can be recovered from backup but downtimes are costly
+ Replication aims towards lowering downtime
+ Failovers can be configured to such a level where application may not notice
+the primary source is offline
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Data Replication in Postgres
+ Data replication options:
+ Log-Shipping Standby Servers
+ Streaming Replication
+ Logical Replication
+ Postgres-BDR
+ EDB Replication Server
+ Cluster management tools:
+ High Availability Routing for Postgres(HARP)
+ EDB Failover Manager
+ Replication manager(repmgr)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Streaming Replication
+ Streaming Replication (Hot Standby) is a major feature of Postgres
+ Replica connects to the primary node using REPLICATION protocol
+ WAL segments are streamed to replica server
+ No log shipping delays, stream WAL content across to replica immediately
+ Synchronous/Asynchronous options available
+ Supports cascading replication
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Hot Streaming Architecture
+Production
+Replica
+WAL Sender WAL Receiver
+WAL stream
+Reports
+Primary database Replica database
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Asynchronous Replication
+ Streaming replication is asynchronous by default
+but can be configured as synchronous
+ Asynchronous
+ Disconnected architecture
+ Transaction is committed on primary and flushed to WAL
+segment
+ Later transaction is transmitted to replica server(s) using stream
+ Some data loss is possible
+ Replication using WAL Archive method is always asynchronous
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Synchronous Replication
+ Synchronous Replication
+ A 2-safe replication method offering zero data loss
+ Transaction must apply changes to primary and
+synchronously replicated replicas using two-phase commit
+actions
+ User gets a commit message after confirmation from both
+primary and replica
+ This will introduce a delay in committing transactions
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Cascading Replication
+Primary
+ Streaming replication supports single
+master node
+ Cascade replication can be used to
+share the replication overhead of
+primary with other replicas
+ Replica can stream changes to other Replica 1
+Replicas
+ Helps minimize inter-site bandwidth
+overheads on primary node
+ Asynchronous only
+Replica 2 Replica 3
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Setup Streaming Replication
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Primary Server Configuration
+ For Physical Streaming Replication:
+ Change WAL Content parameter:
+ wal_level = replica #Default is replica
+ Two options to allow streaming connection:
+ max_wal_senders
+ max_replication_slots
+ Set only the minimum number of segments retained in pg_wal
+ wal_keep_size = 1024
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Synchronous Streaming Replication Configuration
+ Default level of Streaming Replication is Asynchronous
+ Synchronous level can also be configured using additional parameters:
+synchronous_commit=on
+synchronous_standby_names
+ If the synchronous replica stops responding, then COMMITs will be blocked
+forever until someone manually intervenes
+ Transactions can be configured not to wait for replication by setting the
+synchronous_commit parameter to local or off
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Configure Authentication
+ Authentication setting on the primary server must allow replication connections
+from the replica(s)
+ Provide a suitable entry or entries in pg_hba.conf with the database field set to
+replication
+ Open pg_hba.conf of primary server:
+host replication all 192.168.56.2/32 md5
+Note - You will need to reload the primary server
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Take a Full Backup of the Primary Server
+ Backup the Primary Server using pg_basebackup:
+ pg_basebackup -h localhost -U postgres –p 5444
+-D /backup/data1 -R
+ -R option
+ Creates a default copy of standby.signal file
+ Add primary server connection info to postgresql.auto.conf
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Replica Configuration
+hot_standby Set this parameter to “ON” for read-only replica
+primary_conninfo Set connection string to connect with primary or cascaded replica
+primary_slot_name Specify replication slot name to be used for connection
+max_standby_streaming_delay Duration for which replica has to wait during query conflicts
+wal_receiver_create_temp_slot Authorize WAL receiver process to be able to create a temporary replication slot
+recovery_min_apply_delay Parameter used for delayed replication
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Replica Recovery Settings
+ Replica configuration settings must be set in postgresql.conf or
+postgresql.auto.conf
+ Create a file name standby.signal in the data directory
+ standby.signal indicates the server should start as a replica
+ Last step - start the replica using system services or pg_ctl
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Logical Replication
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Logical Replication Use Cases
+ Logical Replication and be used and configured several ways
+ Publisher / Subscriber ( Typical )
+ Tables replicated from one database to another
+ Logical Replication Failover
+ HA Environment: Primary fails the Secondary will become the Publisher
+ Logical Replication from a Replica
+ HA Environment: Logically replicate from secondary
+ Initial Data Sync for Logical Replication
+ HA Environment: Convert from streaming to logical replication
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Logical Replication: Publisher / Suscriber
+ Logical replication is a method of
+Publication 1 Subscription 1
+replicating selected data objects and
+their changes
+Publication 2 Subscription 2
+ Based on publications and WAL
+Primary Standby
+Sender
+subscriptions
+Logical
+ Can be used to consolidate data Replication Subscription 1
+Worker
+Logical Subscription 2
+ Portable across hardware and
+Replication
+software version Launcher
+Publication 3 Subscription 3
+ Tables on standby server which are Publication 4 Subscription 4
+part of a subscription must be
+treated as read only to avoid conflicts Primary Reporting
+Consolidate
+Upgrades
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+When to Use Logical Replication
+ Sending incremental changes in a single database or a subset
+of a database to subscribers
+ Consolidating multiple databases into a single one
+ Replicating between different major versions of Postgres
+ Giving access to replicated data to different groups of users
+ Sharing a subset of the database between multiple databases
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Setting Up Logical Replication
+Change wal_level to logical in postgresql.conf
+Add pg_hba.conf entry in each server to allow connection
+Connect to database in publication instance
+Create a publication using CREATE PUBLICATION statement
+A published table must have a “replica identity” configured in
+order to be able to replicate UPDATE and DELETE operations
+Connect to database in subscription instance and create a
+subscription using CREATE SUBSCRIPTION statement
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example – Logical Replication Setup
+ Initialize sample publication(primarypub) and subscription(primarysub) instance
+[postgres@localhost ~]$ initdb --version
+[postgres@localhost ~]$ initdb –D primarypub –U pubdba
+[postgres@localhost ~]$ initdb –D primarysub –U subdba
+ Edit postgresql.conf parameter for both instances
+[postgres@localhost ~]$ vi primarypub/postgresql.conf
+port=5420
+wal_level=logical
+[postgres@localhost ~]$ vi primarysub/postgresql.conf
+port=5421
+wal_level=logical
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example – HBA Entries and Starting Instances
+ Add pg_hba.conf entries for connections
+[enterprisedb@localhost ~]$ vi primarysub/pg_hba.conf
+host all pubdba 192.168.56.101/32 md5
+[enterprisedb@localhost ~]$ vi primarypub/pg_hba.conf
+host all subdba 192.168.56.101/32 md5
+ Start both instances
+[enterprisedb@localhost ~]$ pg_ctl –D primarypub/ start
+[enterprisedb@localhost ~]$ pg_ctl –D primarysub/ start
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example – Create Tables and Publication
+ Connect to default database in publication instance
+[postgres@localhost ~]$ psql –p 5420 –U pubdba postgres
+ Create a sample table and publication
+=# CREATE TABLE pubexample(id INT PRIMARY KEY,
+name VARCHAR(30));
+=# INSERT INTO pubexample
+VALUES(generate_series(1,5000),’Test1’);
+=# SELECT count(*) FROM pubexample;
+=# CREATE PUBLICATION testpub FOR TABLE pubexample;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example – Create Tables and Subscription
+ Connect to default database in subscription instance
+[postgres@localhost ~]$ psql –p 5421 –U subdba postgres
+ Create a sample table and subscription
+=# CREATE TABLE pubexample(id INT PRIMARY KEY,
+name VARCHAR(30));
+=# CREATE SUBSCRIPTION testsub CONNECTION
+‘host=localhost port=5420 user=pubdba dbname=postgres’
+PUBLICATION testpub;
+=# SELECT count(*) FROM pubexample;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example – Test Logical Replication
+ Add data to publication
+[postgres@localhost ~]$ psql –p 5420 –U pubdba postgres
+postgres=# INSERT INTO pubexample
+VALUES (generate_series(5001,10000),’Test1’);
+postgres=# \q
+ Check changes on Subscription
+[postgres@localhost ~]$ psql –p 5421 –U subdba postgres
+postgres=# SELECT count(*) FROM pubexample;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Logical Replication Failover
+ Subscriber nodes seamlessly
+continue replicating by pulling Streaming Replication
+Physical
+data from the new publisher Primary
+Replica
+node after failover
+Logical Logical
+Replication Replication
+Continues
+ Configure using parameters
+Logical
+and system functions during
+Replica
+replication setup
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Setup Failover Control
+1. Enable the failover property on subscriber node:
+ Set the failover property for slots linked to subscriptions using CREATE SUBSCRIPTION or
+pg_create_logical_replication_slot() API
+2. Standby node must be configured for slot sync and be always ahead of the subscribers:
+ Enable sync_replication_slots parameter on standby to sync failover slots periodically.
+ Specify a valid database name in primary_conninfo string on standby node
+ On primary node, configure synchronized_standby_slots to include the replication slot
+used for physical streaming
+3. Streaming between Primary and Physical Replica must be setup using Replication Slot:
+ Set primary_slot_name and enable hot_standby_feedback on physical replica
+4. Verify slot sync using pg_replication_slots on primary node:
+ SELECT slot_name, synced FROM pg_replication_slots;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Logical Replication from a Replica
+ Postgres uses logical decoding for
+performing logical replication
+Streaming
+ In earlier versions, logical decoding was
+Replication
+confined to the primary server
+Physical
+Primary
+Replica
+Logical
+ Logical decoding can now be performed
+Replication
+on Read-Only Standby
+Logical Logical
+Replica Replica
+ Significant reduction of the workload on
+the primary server
+ Seamless transition during primary
+failovers to standby
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Setup Logical Replication from a Replica
+1.Primary Server (Read-Write)
+ wal_level set to logical
+ WAL Sender sending all changes to Replica
+2.Replica (Read Only)
+ WAL Receiver replays changes from Primary
+ wal_level set to logical
+ Create a publication for logical replication
+ Supports pg_create_logical_replication_slot
+3.Subscriber Node
+ Create a subscription for the publication on Replica Node
+ Replicated tables must be read-only
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Initial Data Sync for Logical Replication
+Logical Replication provides option
+▪
+for replicating selected objects using
+streaming
+Streaming
+Replication
+Logical replication setup requires an
+▪ Replica
+Primary
+------------------
+initial data sync which can be ------------------
+Subscriber
+Publisher
+resource intensive and time
+pg_createsubscriber
+consuming
+Postgres now offers conversion of
+▪
+an existing Primary-Replica physical
+streaming setup to Logical
+Streaming using pg_createsubscriber
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Convert Physical Replica to
+Logical Replication
+pg_createsubscriber utility:
+▪
+Run on target server to convert
+▪
+existing physical streaming setup to
+logical replication
+Creates a publisher node and
+▪
+subscriber node for each specified
+database including all the tables.
+Does not copy the initial table data
+▪
+Targets large database systems
+▪
+where initial sync can be a problem
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+

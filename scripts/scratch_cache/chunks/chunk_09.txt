@@ -1,0 +1,580 @@
+Source PDF: EDB Postgres AI Database Essentials v17_Student_144dpi_75%.pdf
+Pages: 51 to 100
+========================================
+
+Package Installation Options
+Wizard Installer RPM Installer DNF Installer
+ Interactive Method  Preferred Installation  Attempt to Install
+Method on Linux required package
+ Graphical or Command dependencies
+Line Mode, available for  Access to
+Windows EnterpriseDB’s rpm  Can be used to install
+Repository is required EDB Postgres in
+ Easy Download from Isolated Environments
+www.enterprisedb.com  Dependencies are
+resolved manually
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Configure EDB Repositories
+ An EDB account is required to access our software repositories and downloads
+ Setup EDB Repositories: https://www.enterprisedb.com/repos-downloads
+ Ensure EPEL repositories are setup if running Rocky Linux v9:
+sudo dnf -y install https://dl.fedoraproject.org/pub/epel/epel-
+release-latest-9.noarch.rpm
+ Check Instructions for various operating systems:
+https://www.enterprisedb.com/docs/epas/latest/installing/
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+YUM Installation Overview
+ YUM command can be used to install Enterprise Postgres:
+# dnf install epel-release
+# dnf config-manager --set-enabled crb
+# dnf install edb-as17-server
+ Configure a Package Installation using service configuration file
+# /usr/lib/systemd/system/edb-as-17.service
+ Create a database cluster and start the cluster using services:
+# /usr/edb/as17/bin/edb-as-17-setup initdb
+# systemctl start edb-as-17
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example – EDB Postgres Server Installation
+ Step 1 – Login as root user and add user enterprisedb using adduser or
+useradd command and set its password:
+# useradd enterprisedb
+# passwd enterprisedb
+ Step 2 – Install EPEL using yum:
+# dnf install epel-release
+ Step 3 – Configure EDB Repos using your secure token:
+# curl -1sLf 'https://downloads.enterprisedb.com/<secure
+token>/enterprise/setup.rpm.sh' | sudo -E bash
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example – Enterprise Postgres Installation (cont.)
+ Step 4 – Install Enterprise Postgres using yum command
+# dnf install edb-as17-server
+ Step 5 - Create a database cluster and start the cluster using services:
+# /usr/edb/as15/bin/edb-as-17-setup initdb
+# systemctl start edb-as-17
+# systemctl enable edb-as-17
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example – Post-Install Environmental Variables setup
+[enterprisedb@pgsrv1 ~]$ vi .bash_profile
+Edit User Profile
+PATH=/usr/edb/as17/bin/:$PATH:$HOME/.local/bin:$HOME/bin
+export PATH
+export PGDATA=/var/lib/edb/as17/data/
+export PGUSER=enterprisedb
+export PGPORT=5444 Logoff and Login
+export PGDATABASE=enterprisedb
+[enterprisedb@pgsrv1 ~]$ exit
+logout
+[root@pgsrv1 ~]# su - enterprisedb
+Verify
+Environmental
+[enterprisedb@pgsrv1 ~]$ which psql
+Settings
+/usr/edb/as17/bin/psql
+[enterprisedb@pgsrv1 ~]$ pg_ctl status
+pg_ctl: server is running (PID: 66406)
+/usr/edb/as17/bin/edb-postgres
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ OS User and Permissions
+ Installation Options
+ Installation of Enterprise
+Postgres
+ Setting Environmental Variables
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 1
+ Choose the platform on which you want
+to install Enterprise Postgres (formerly
+known as EDB Postgres Advanced
+Server)
+ Download the Enterprise Postgres
+installer from the EnterpriseDB website
+for the chosen platform
+ Prepare the platform for installation
+ Install Enterprise Postgres
+ Connect to Enterprise Postgres using
+psql
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+User Tools -
+Command Line
+Interfaces
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ Introduction to psql
+ Connecting to Database
+ psql Command Line Parameters
+ psql Meta-Commands
+ Conditional and Information
+Commands
+ EDB*Plus
+ Installing and Starting EDB*Plus
+ EDB*Plus Commands
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Introduction to psql
+ psql is a command line interface (CLI) to Postgres
+ Can be used to execute SQL queries and psql meta commands
+[enterprisedb@Base ~]$ psql -h /tmp -p 5444 -U enterprisedb -d edb
+Type "help" for help.
+edb=# \q
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Connecting to a Database
+psql Connection Options:
+ -d <Database Name>
+ -h <Hostname>
+ -p <Database Port>
+ -U <Database Username>
+Environmental Variables
+ PGDATABASE, PGHOST, PGPORT and PGUSER
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Conventions
+ psql has its own set of commands, all of which start
+with a backslash (\).
+ Some commands accept a pattern. This pattern is a
+modified regex. Key points:
+ * and ? are wildcards
+ Double-quotes are used to specify an exact name, ignoring all
+special characters and preserving case
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+On Startup…
+ psql will execute commands from $HOME/.psqlrc, unless option -X is
+specified
+ -f FILENAME will execute the commands in FILENAME, then exit
+ -c COMMAND will execute COMMAND (SQL or internal) and then exit
+ --help will display all the startup options, then exit
+ --version will display version info and then exit
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Entering Commands
+ psql uses the command line
+editing capabilities that are
+available in the native OS.
+Generally, this means:
+ Up and Down arrows cycle
+through command history
+ On UNIX, there is tab completion
+for various things, such as SQL
+commands
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+History and Query Buffer
+ \s will show the command history
+ \s FILENAME will save the command history
+ \e will edit the query buffer and then execute it
+ \e FILENAME will edit FILENAME and then execute it
+ \w FILENAME will save the query buffer to FILENAME
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Controlling Output
+ psql -o FILENAME or meta command
+\o FILENAME will send query output
+(excluding STDERR) to FILENAME
+ \g FILENAME executes the query buffer
+sending output to FILENAME
+ \watch <seconds> can be used to run
+previous query repeatedly
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Advanced Features - Variables
+ psql provides variable substitution
+ Variables are simply name/value pairs
+ Use \set meta command to set a variable
+=> \set city Edmonton
+=> \echo :city
+Edmonton
+ Use \unset to delete a variable
+=> \unset city
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Advanced Features - Special Variables
+ Settings can be changed at runtime by altering special variables
+ Some important special variables include:
+ AUTOCOMMIT, ENCODING, HISTFILE, ON_ERROR_ROLLBACK,
+ON_ERROR_STOP, PROMPT1 and VERBOSITY
+ Example:
+=# \set AUTOCOMMIT off
+ Once AUTOCOMMIT is set to off use COMMIT/ROLLBACK to complete the
+running transaction
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Conditional Commands
+ Conditional commands primarily helpful for scripting
+ \if EXPR begin conditional block
+ \elif EXPR alternative within current conditional block
+ \else final alternative within current conditional block
+ \endif end conditional block
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Information Commands
+ \d[(i|s|t|v|b|S)][+] [pattern]
+ List of objects (indexes, sequences, tables, views, tablespaces and dictionaries)
+ \d[+] [pattern]
+ Describe structure details of an object
+ \l[ist][+]
+ Lists of databases in a database cluster
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Information Commands (continued)
+ \dn+ [pattern]
+ Lists schemas (namespaces)
+ + adds permissions and description to output
+ \df[+] [pattern]
+ Lists functions
+ + adds owner, language, source code and description
+to output
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Common psql Meta Commands
+ \q or ^d or quit or exit
+ Quits the psql program
+ \cd [ directory ]
+ Change current working directory
+ Tip - To print your current working directory, use \! pwd
+ \! [ command ]
+ Executes the specified command
+ If no command is specified, escapes to a separate Unix shell (CMD.EXE in Windows)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Help
+ \conninfo
+ Current connection information
+ \?
+ Shows help information about psql commands
+ \h [command]
+ Shows information about SQL commands
+ If command isn't specified, lists all SQL commands
+ psql --help
+ Lists command line options for psql
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+EDB*Plus
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+EDB*Plus
+ EDB*Plus is a command line user interface to
+the Enterprise Postgres
+ EDB*Plus accepts SQL commands, SPL
+anonymous blocks, and EDB*Plus commands
+ EDB*Plus commands are compatible with
+Oracle SQL*Plus commands
+ edb-edbplus package is available to install
+EDB*Plus using yum command and requires
+java runtime
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+EDB*Plus Features
+ EDB*Plus can be used for:
+ Querying certain database objects
+ Executing stored procedures
+ Formatting output from SQL commands
+ Executing batch scripts
+ Executing OS commands
+ Recording output
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ Introduction to psql
+ Connecting to Database
+ psql Command Line Parameters
+ psql Meta-Commands
+ Conditional and Information
+Commands
+ EDB*Plus
+ Installing and Starting EDB*Plus
+ EDB*Plus Commands
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Prepare Lab Environment
+ In the training materials provided by EDB there is a script file edbstore.sql that
+can be executed using edb-psql to create a sample edbstore database.
+Here are the steps:
+ Download the edbstore.sql file and place in a directory which is accessible to the
+enterprisedb user
+ Login as enterprisedb OS user
+ Run the edb-psql command with the -f option to execute the edbstore.sql file and install all
+the sample objects required for this training
+ $ edb-psql -p 5444 -f edbstore.sql –d edb –U enterprisedb
+ Note - The above command will prompt for edbuser password. The password is edbuser
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 1
+ In this lab exercise you will have a chance to practice what you have learned
+through using command line interfaces:
+1. Connect to a database using psql 9. Do the same thing, just saving data,
+not the column headers
+2. Switch databases
+10. Create a script via another method,
+3. Describe the customer's table
+and execute from psql
+4. Describe the customers table
+11. Turn on the expanded table formatting
+including description
+mode
+5. List all databases
+12. Lists tables, views and sequences
+6. List all schemas with their associated access privileges
+7. List all tablespaces 13. Which meta command displays the
+SQL text for a function?
+8. Execute a sql statement, saving the
+output to a file 14. View the current working directory
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database
+Clusters
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ Database Clusters
+ Creating a Database Cluster
+ Starting and Stopping the
+Server (pg_ctl)
+ Connecting to the Server
+Using psql
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Clusters
+A Database Cluster is a collection of
+databases managed by a single server
+instance
+Database Clusters are comprised of:
+ Data directory
+ Port
+Default databases are created named:
+ template0
+ template1
+ postgres
+ edb
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Creating a Database Cluster
+ Choose the data directory location for
+new cluster
+ Initialize the database cluster storage
+area (data directory) using the initdb
+utility
+ initdb will create the data directory if
+it doesn’t exist
+ You must have permissions on the
+parent directory so that initdb can
+create the data directory
+ The data directory can be created
+manually by superuser and the
+ownership can be given to enterprisedb
+user
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+initdb Utility
+$ initdb [OPTION]... [DATADIR]
+Options:
+ -D, --pgdata location for this database cluster
+ -E, --encoding set default encoding for new databases
+ -U, --username database superuser name
+ -W, --pwprompt prompt for a password for the new superuser
+ -X, --waldir location for the write-ahead log directory
+ --wal-segsize size of wal segments , in megabytes
+ -k, --data-checksums use data page checksums
+ --no-redwood-compat Do not install Oracle compatibility features
+ --redwood-like Use Oracle compatible behavior
+ -y, --data-encryption enable transparent data encryption
+ -?, --help show this help, then exit
+If the data directory is not specified, the environment variable PGDATA is used
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Enabling Transparent Data Encryption
+Transparent Data Encryption (TDE) can be used to encrypt
+data files, WAL and temporary files
+Can only be done at cluster creation
+Following initdb command options can be used to enable TDE:
+-y, --data-encryption
+--copy-key-from=<file>
+--key-wrap-command=<command>
+--key-unwrap-command=<command>
+--no-key-wrap
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - initdb
+[root@Base ~]# mkdir /edbstore
+[root@Base ~]# chown enterprisedb:enterprisedb /edbstore
+[root@Base ~]# su – enterprisedb
+[enterprisedb@Base ~]$ initdb -D /edbstore --wal-segsize 1024 -W
+ In the above example the database  --wal-segsize 1024 MB
+system will be owned by user specifies the write-ahead log
+enterprisedb file segment size
+ The enterprisedb user is the  -W is used to force initdb to
+database superuser prompt for the superuser
+password
+ The default server config file will be
+created in /edbstore named
+postgresql.conf
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pg_ctl Utility
+ pg_ctl is a command line utility provided by Postgres to initialize, start, stop and
+control a Postgres instance
+ It provide options for redirecting start log, controlled startup and shutdown
+ -D option or environmental variable PGDATA can be used to specify cluster
+data directory
+pg_ctl -D datadir
+start stop restart reload status promote init logrotate kill
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Starting a Database Cluster
+ After initializing a database cluster, a unique port must be assigned
+ Choose a unique port for postmaster in postgresql.conf
+ Start the database cluster using pg_ctl utility
+ Example:
+[enterprisedb@Base ~]$ vi /edbstore/postgresql.conf
+port = 5434
+[enterprisedb@Base ~]$ pg_ctl -D /edbstore/ -l /edbstore/startlog start
+waiting for server to start.... done
+server started
+[enterprisedb@Base ~]$ pg_ctl -D /edbstore/ status
+pg_ctl: server is running (PID: 62239)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Connecting To a Database Cluster
+ The edb-psql and PEM clients can be used for connections
+[enterprisedb@Base ~]$ psql -p 5434 -d edb -U
+enterprisedb
+Type "help" for help.
+edb=# show port;
+port
+------
+5434
+(1 row)
+edb=# show data_directory;
+data_directory
+----------------
+/edbstore
+(1 row)
+edb=# \q
+[enterprisedb@Base ~]$
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Reload a Database Cluster
+ Some configuration parameter changes do not require a restart
+ Changes can be reloaded using the pg_ctl utility
+ Changes can also be reloaded using pg_reload_conf()
+ Syntax:
+$ pg_ctl reload [options]
+-D location of the database cluster’s data directory
+-s only print errors, no informational messages
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Stopping a Database Cluster
+ pg_ctl supports three modes of shutdown
+ Smart quit after all clients have disconnected
+ Fast quit directly, with proper shutdown (default)
+ Immediate quit without complete shutdown; will lead to recovery
+ Syntax:
+$ pg_ctl stop [-W] [-t SECS] [-D DATADIR] [-s] [-m SHUTDOWN-MODE]
+ Example:
+[enterprisedb@Base ~]$ pg_ctl -D /edbstore/ stop
+waiting for server to shut down.... done
+server stopped
+[enterprisedb@Base ~]$ pg_ctl -D /edbstore/ status
+pg_ctl: no server running
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+View Cluster Control Information
+ pg_controldata can be used to view the control information
+for a database cluster
+ It can be run with data directory as an option
+[enterprisedb@Base ~]$ pg_controldata /edbstore/
+……………………………………………………………………………………………….
+Database system identifier: 6724770293870218226
+Database cluster state: shut down
+Latest checkpoint location: 0/41A3AA40
+Latest checkpoint's REDO WAL file: 000000010000000000000001
+Latest checkpoint's TimeLineID: 1
+Backup start location: 0/0
+Backup end location: 0/0
+wal_level setting: replica
+Database block size: 8192
+WAL block size: 8192
+Data page checksum version: 0
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ Database Clusters
+ Creating a Database Cluster
+ Starting and Stopping the
+Server (pg_ctl)
+ Connecting to the Server
+Using psql
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 1
+ A new website is to be developed for an online music store.
+ Create a new cluster edbdata with ownership of enterprisedb user
+ Start your edbdata cluster
+ Reload your cluster with pg_ctl utility and using pg_reload_conf() function
+ Stop your edbdata cluster with fast mode
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Configuration
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ Server Parameter File -
+postgresql.conf
+ Viewing and Changing Server
+Parameters
+ Configuration Parameters -
+Security, Resources and WAL
+ Configuration Parameters - Error
+Logging, Planner and
+Maintenance
+ Viewing Compilation Settings
+ Using File Includes
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Setting Server Parameters
+ There are many configuration parameters that effect the behavior
+of the database system
+ All parameter names are case-insensitive
+ Every parameter takes a value of one of five types:
+ boolean
+ integer
+ floating point
+ string
+ enum
+ One way to set these parameters is to edit the file postgresql.conf,
+which is normally kept in the data directory
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+The Server Parameter File - postgresql.conf
+ Holds parameters used by a cluster
+ Parameters are case-insensitive
+ Normally stored in data directory
+ initdb installs default copy
+ Some parameters only take effect on server restart (pg_ctl restart)
+ # used for comments
+ One parameter per line
+ Use include directive to read and process another file
+ Can also be set using the command-line option
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Viewing and Changing Server Parameters
+Configuration parameters Configuration parameters
+can be viewed using: can be modified for:
+ SHOW command  Single session using the
+SET command
+ pg_settings
+ Database user using ALTER
+ pg_file_settings USER
+ Single database using
+ALTER DATABASE
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+

@@ -1,0 +1,488 @@
+Source PDF: EDB Postgres AI Database Advanced v17_Student_144dpi_75%.pdf
+Pages: 151 to 200
+========================================
+
+Connection Settings
+ max_connections
+ Sets the maximum number of
+concurrent connections
+ Each user connection has an associated
+user backend process on the server
+ User backend processes are terminated
+when a user logs off
+ Connection pooling can decrease the
+overhead on postmaster by reusing
+existing user backend processes
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Memory Parameters - shared_buffers
+ Sets the number of shared memory buffers used by the database server
+ Each buffer is 8K bytes
+ Minimum value must be 16 and at least 2 x max_connections
+ 6% - 25% of available memory is a good general guideline
+ You may find better results keeping the setting relatively low and using the
+operating system cache more instead
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Memory Parameters - work_mem
+ work_mem
+ Amount of memory in KB to be used by internal sorts and hash tables before switching to
+temporary disk files
+ Minimum allowed value is 64 KB
+ It is set in KB
+ Increasing the work_mem often helps in faster sorting
+ work_mem settings can also be changed on a per session basis
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Memory Parameters - maintenance_work_mem
+ maintenance_work_mem
+ Maximum memory in KB to be used in maintenance operations such as VACUUM, CREATE
+INDEX, and ALTER TABLE ADD FOREIGN KEY
+ Minimum allowed value is 1024 KB
+ It is set in KB
+ Performance for vacuuming and restoring database dumps can be improved by increasing
+this value
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Memory Parameters -
+autovacuum_work_mem
+ autovacuum_work_mem
+ Maximum amount of memory to be used
+by each autovacuum worker process
+ Default value is -1, indicates that
+maintenance_work_mem to be used
+instead
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Memory Parameters - huge_pages
+ huge_pages
+ Enables/disables the use of huge/large pages
+ Valid values are try (the default), on, and off
+ May help in increasing performance by using smaller page tables thus less CPU time on
+memory management
+ This parameter is only supported on Linux and Windows
+ huge_page_size
+ Controls size of huge pages on Linux systems
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Memory Settings for Planner
+ effective_cache_size
+ Size of memory available for disk cache that is available to a single query
+ A higher value favors index scans
+ This parameter does not reserve kernel disk cache; it is used only for estimation purposes
+ ½ of RAM is a conservative setting
+ ¾ of RAM is more aggressive
+ Find the optimal value looking at OS stats after increasing or decreasing this parameter
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Temporary Files
+ temp_file_limit
+ Maximum amount of disk space that a
+session can use for temporary files
+ A transaction attempting to exceed this
+limit will be cancelled
+ Default is -1 (no limit)
+ This setting constrains the total space
+used at any instant by all temporary files
+used by a given Postgres session
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+WAL Parameters - wal_level
+ wal_level
+ wal_level determines how much information is written to the WAL
+ The default value is replica, adds logging required for WAL archiving as well as information
+required to run read-only queries on a Replica server
+ The value logical is used to add information required for logical decoding
+ The value minimal, removes all logging except the information required to recover from a
+crash or immediate shutdown
+ This parameter can only be set at server start
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+WAL Parameters - wal_buffers
+ wal_buffers
+ Number of disk-page buffers allocated in shared memory for WAL data
+ Each buffer is 8K bytes
+ Needs to be only large enough to hold the amount of WAL data created by a typical
+transaction since the WAL data is flushed out to disk upon every transaction commit
+ Minimum allowed value is 4
+ Default setting is -1 (auto-tuned)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+WAL Parameters – Checkpoints and max_wal_size
+ Checkpoints
+ Writes the current in-memory modified pages (known as dirty pages) to the disk
+ An automatic checkpoint occurs each time the max_wal_size is reached
+ max_wal_size (default: 1GB)
+ Maximum distance between automatic WAL checkpoints
+ Each log file segment is 16 megabytes and the size can changed at the time of initialization using --wal-
+segsize
+ A checkpoint is forced when the max_wal_size is reached
+ max_wal_size is soft limit and WAL size may exceed during heavy load, failed archive command, or
+high wal_keep_size
+ Increase in max_wal_size also increases mean time to recovery
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+WAL Parameters - checkpoint_timeout
+ checkpoint_timeout
+ Maximum time between automatic WAL checkpoints in seconds before a checkpoint is forced
+ A larger setting results in fewer checkpoints
+ Range is 30 – 3600 seconds
+ The default is 300 seconds
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+WAL Parameters - fsync
+ fsync
+ Ensures that all the WAL buffers are written to the WAL logs at each COMMIT
+ When on, fsync() or other wal_sync_method is forked
+ Turning this off will be a performance boost but there is a risk of data corruption
+ Can be turned off during initial loading of a new database cluster from a backup file
+ synchronous_commit = off can provide similar benefits for noncritical transactions
+without any risk of data corruption
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pg_test_fsync Tool
+wal_sync_method is used for forcing WAL updates out to disk
+
+pg_test_fsync can determine the fastest wal_sync_method on your
+
+specific system
+pg_test_fsync reports average file sync operation time
+
+Diagnostic information for an identified I/O problem
+
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Parallel Queries – Parallel Plans
+ Parallel scans – The following types of parallel table scans are supported:
+ Parallel sequential scan – Allows multiple workers to perform a sequential scan
+ Parallel bitmap heap scan – Allows a single index scan to dispatch parallel workers to process different areas of the
+heap
+ Parallel index scan or parallel index-only scan – Allows B-tree index pages to be searched by separate parallel workers
+ Parallel joins – Allows nested loop, hash join or merge joins to be performed in parallel
+ Parallel aggregation – Allows queries with aggregations to be parallelized
+ Parallel DDLs - CREATE TABLE AS SELECT, CREATE INDEX, and CREATE
+MATERIALIZED VIEW
+ Parallel execution of FULL and Right joins, optimizing join operations for efficiency
+ Parallel execution support for string_agg and array_agg aggregate functions
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Parallel Query Scan Parameters
+ Postgres supports parallel Parameter Name Default Value
+execution of the read-only queries
+enable_parallel_append on
+enable_parallel_hash on
+ Parallel scans can be enabled
+and configured using various
+max_parallel_maintenance_workers 2
+configuration parameters
+max_parallel_workers 8
+max_parallel_workers_per_gather 2
+min_parallel_index_scan_size 64
+min_parallel_table_scan_size 1024
+parallel_setup_cost 1000
+parallel_tuple_cost 0.1
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example – Parallel Query Scan
+ Create table and insert data
+ Disable parallel scan and check execution time:
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example – Parallel Query Scan (continued)
+Enable parallel scan and check execution time:
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Loading a Table into Memory
+ pg_prewarm
+ Can be used to load relation data into either the operating system buffer cache or into the PostgreSQL
+buffer cache
+ Supports prefetch method for operating system buffer cache and buffer method for PostgreSQL
+buffer cache
+ pg_prewarm can be used to automatically load shared blocks at the time of server restart
+ Add pg_prewarm to shared_preload_libraries to start autoprewarm master process
+ Configuration Parameters:
+ pg_prewarm.autoprewarm (default is on)
+ pg_prewarm.autoprewarm_interval (default is 300 seconds)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pg_prewarm Example
+ Install Postgres contrib(installed by default with server packages):
+ dnf install edb-asXX-server-contrib
+ Add pg_prewarm extension to a database and load table data into
+shared buffers:
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Best Practices for Inserting Large Amounts of Data
+ While inserting data using multiple inserts use BEGIN at the start and COMMIT at
+the end
+ Use COPY to load all the rows in one command, instead of using a series of
+INSERT commands
+ If you cannot use COPY, it might help to use PREPARE to create a prepared
+INSERT statement, and then use EXECUTE as many times as required
+ If you are loading a freshly created table, the fastest method is to create the table,
+bulk load the table’s data using COPY, then create any indexes needed for the
+table. EDB*Loader of Enterprise Postgres is 2x faster than COPY
+ It might be useful to drop foreign key constraints, load the data, and then
+re-create the constraints
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Best Practices for Inserting Large Amounts of Data (Cont.)
+ Temporarily increasing the maintenance_work_mem and max_wal_size
+configuration variables when loading large amounts of data can lead to
+improved performance
+ Disable WAL Archival and Streaming Replication
+ Triggers and Autovacuum can also be disabled
+ Certain commands run faster if wal_level is minimal:
+ CREATE TABLE AS SELECT
+ CREATE INDEX (and variants such as ALTER TABLE ADD PRIMARY KEY)
+ ALTER TABLE SET TABLESPACE
+ CLUSTER
+ COPY FROM, when the target table has been created or truncated earlier in the same transaction
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Non-Durable Settings
+ Durability guarantees the recording of committed transactions but adds
+significant overhead.
+ Postgres can be configured to run without durability.
+ Turn off fsync when there is no need to flush wal data to disk.
+ Turn off full_page_writes.
+ Increase max_wal_size and checkpoint_timeout; this reduces the
+frequency of checkpoints.
+ Turn off synchronous_commit when there is no need to write the WAL to
+disk on every commit.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Tuning Wizard
+ The PEM Tuning Wizard reviews your PostgreSQL installation and recommends
+a set of configuration options to tune your server
+ You must specify Service ID field on the Advanced tab of the server’s
+Properties dialog
+ It can make recommendations for servers that reside on the same server as
+their bound PEM agent
+ If a value of Yes is specified in the Remote monitoring field while defining
+the server then it will not be displayed in Tuning Wizard tree control
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Tuning Wizard – Welcome and Select Servers
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Tuning Wizard – Configuration and Tuning Changes
+Summary
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Tuning Wizard – Schedule/Run and Generate Report
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM Tuning Wizard Report
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+SQL Profiler
+ SQL Profiler is a graphical wizard available in PEM
+ PEM SQL Profiler capabilities are very similar to Microsoft SQL Server’s Profiler
+ It can be used to:
+ Capture workloads in a SQL trace
+ Monitor and analyze SQL
+ Diagnose slow-running queries
+ View the query execution statistics
+ Schedule a SQL trace to run during heavy workloads
+ Get advice on indexes
+ SQL Profiler plug-in must be installed and configured for each Postgres
+database
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Capacity Planning using Capacity Manager
+ PEM contains built-in capabilities for performing database capacity planning
+ Capacity planning helps by providing answers to questions like:
+ How much storage will my database need 6 months from now?
+ How fast is my database growing?
+ What objects are responsible for the growth in my database?
+ Will my server be able to support another database instance?
+ Is the performance of my database getting better, staying the same, or getting worse?
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Capacity Manager
+ Analyzes collected statistics to generate a graph or table
+ Displays the historical usage statistics of an object
+ Can project the anticipated usage statistics for an object
+ Analyze metrics for a specific:
+ Host/operating system
+ Enterprise Postgres or PostgreSQL server
+ Database
+ Database object (table, index, function etc.)
+ You can choose a specific metric (or metrics) to include in the report
+ You can also specify a start and end date for the Capacity Manager report
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - Capacity Manager
+1 2
+Select the metrics: Dead,
+Updated and Deleted
+Tuples
+Select the metrics: Dead,
+Updated and Deleted
+Tuples
+Buttons for Saving and Click Generate for
+Loading Templates Report
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Sample Capacity Manager Report
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+DRITA
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+DRITA
+ Dynamic Runtime Instrumentation Tools Architecture (DRITA):
+ Allows DBAs to query catalogs
+ Determines the wait events affecting performance
+ DRITA records wait event information while consuming minimal resources
+ Compares snapshots to evaluate the performance of a system
+ Snapshots identified by a unique ID number
+ Functions available for creating, viewing and comparing snapshots
+ DRITA consumes minimal system resources
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+DRITA Snapshots
+ A snapshot is a saved set of system performance data at a given point in time
+ A unique ID number identifies each snapshot
+ Snapshot ID numbers are used with DRITA reporting functions to return system
+performance statistics
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Using DRITA Reports for Performance Tuning
+ Review the top five events in a given report
+ Look for any event that takes a disproportionately large percentage of resources
+ Waits should be evaluated in the context of CPU usage and total time
+ When evaluating events, watch for:
+ Checkpoint waits
+ WAL-related waits
+ SQL parse waits
+ db file random reads
+ db file random writes
+ btree random lock acquires
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM – System Wait Analysis Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 1
+ Users are complaining about
+slower than normal performance
+on edbstore database
+ Tune postgresql.conf parameters for
+optimal performance based on the
+edbstore database size, largest table,
+and other necessary information
+collected from edbstore database
+ Change maximum concurrent
+connections on the cluster to 50
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 2
+ Write a statement to load
+customers table from
+edbstore database to the
+PostgreSQL buffer cache
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 3
+ pg_test_fsync can
+determine the fastest
+wal_sync_method on a
+specific system. Run this tool on
+your local machine and
+determine the best
+wal_sync_method settings
+for your system.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Performance
+Benchmarking
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Module Objectives
+ Database Benchmarking
+ Benchmarking Tools
+ pgbench
+ Preparing a database for pgbench
+ Running a pgbench test
+ Default Script
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Benchmarking
+ Measures the performance of database features essential to applications
+ Helps in preparing the system
+ Helps in detecting a performance shortfall
+ Can evaluate database parameter changes and help in calculating optimal
+parameter values
+ Identifies problematic areas
+ Can be used for comparing different databases
+ Helps make file system choice for data directory
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Benchmarking Tools
+ Various open-source database performance benchmarking
+tools can be used with PostgreSQL:
+ pgbench
+ pgbench-tools
+ BenchmarkSQL
+ HammerDB
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pgbench
+ Simple program for running benchmark tests on PostgreSQL
+ pgbench executable is by default located in
+/usr/edb/asXX/bin/
+ Based on TPC-B
+ Bank, Accounts, and Tellers model is used
+ Derived from JDBCBench eliminating Java overhead
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+pgbench Working
+ Connect multiple database sessions and run the same SQL multiple times
+ Calculates the average transaction rate (transactions per second)
+ Default workload involves five SELECT, UPDATE, and INSERT commands
+per transaction
+ TPC-B-like test requires specific tables in a database
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Preparing a Database for pgbench - Invoke
+ Invoke pgbench with –i to create and populate required tables
+pgbench -i [ other-options ] dbname
+[postgres@pgsrv1 ~]$ pgbench -i -s 50 pgtest
+dropping old tables...
+creating tables...
+generating data (client-side)...
+5000000 of 5000000 tuples (100%) done (elapsed 24.29 s, remaining 0.00 s)
+vacuuming...
+creating primary keys...
+done in 39.76 s (drop tables 0.03 s, create tables 0.01 s, client-side generate 24.69
+s, vacuum 3.41 s, primary keys 11.61 s).
+ pgbench can run a custom script and will not require initialization
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Preparing a Database for pgbench - Verify
+ pgbench -i creates four tables
+ Options available with pgbench during initialization:
+-s : scale factor to control the number of rows
+-F : fill factor (default 100)
+--unlogged-tables: create all tables as unlogged
+--tablespace
+--index-tablespace
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Running a pgbench Test
+ Run your benchmark with the pgbench command without using –i
+pgbench [ options ] dbname
+ Options:
+-c clients Number of concurrent database sessions. Default is 1
+-C Establish a new connection for each transaction
+-f filename Read transaction script from filename
+-j threads Number of worker threads within pgbench
+-S Perform select-only transactions instead of a TPC-B like test
+-t Number of transactions each client runs. Default is 10
+-T seconds Run the test for this many seconds
+--log-prefix Prefix for transaction time log file (default; “pgbench_log”)
+-? Help
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+

@@ -1,0 +1,612 @@
+Source PDF: EDB Postgres AI Database Essentials v17_Student_144dpi_75%.pdf
+Pages: 101 to 150
+========================================
+
+Changing Configuration Parameter at Cluster Level
+ Use ALTER SYSTEM command to
+edit cluster level settings without
+editing postgresql.conf
+[enterprisedb@pgsrv1 ~] psql edb
+enterprisedb
+edb=# ALTER SYSTEM SET work_mem=20480;  ALTER SYSTEM writes new setting
+ALTER SYSTEM
+to postgresql.auto.conf file which is
+edb=# SELECT pg_reload_conf();
+read at last during server
+edb=# ALTER SYSTEM RESET work_mem; reload/restarts
+ALTER SYSTEM
+edb=# SELECT pg_reload_conf();
+ Parameters can be modified using
+ALTER SYSTEM when required
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Connection Settings
+ listen_addresses (default *) - Specifies the addresses on which the server is to
+listen for connections. Use * for all
+ port (default 5444) - The port the server listens on
+ max_connections (default 100) - Maximum number of concurrent connections
+the server can support
+ superuser_reserved_connections (default 3) - Number of connection slots
+reserved for superusers
+ unix_socket_directory (default /tmp) - Directory to be used for UNIX socket
+connections to the server
+ unix_socket_permissions (default 0777) - access permissions of the Unix-
+domain socket
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Security and Authentication Settings
+ authentication_timeout (default is 1
+minute) – Maximum time to complete
+client authentication, in seconds
+ row_security (default is on) – Controls row
+security policy behavior
+ password_encryption (default scram-sha-
+256) – Determines the algorithm to use to
+encrypt password
+ ssl (default: off) - Enables SSL connections
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+SSL Settings
+ ssl_ca_file - Specifies the name of the file
+containing the SSL server certificate authority
+(CA)
+ ssl_cert_file - Specifies the name of the file
+containing the SSL server certificate
+ ssl_key_file - Specifies the name of the file
+containing the SSL server private key
+ ssl_ciphers - List of SSL ciphers that may be
+used for secure connections
+ ssl_dh_params_file – Specifies file name for
+custom OpenSSL DH paramters
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Memory Settings
+maintenance_
+autovacuum
+shared_buffers temp_buffers work_mem temp_file_limit
+_work_mem
+work_mem
+Amount of
+Amount of Amount of Amount of Amount of
+Size of memory
+memory memory memory disk space
+shared used
+used sorting used for used by used for
+buffer pool caching
+and hashing maintenance autovacuum temporary
+for a cluster temporary
+operations commands worker files
+tables
+Server Session
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Dynatune Dynamic Tuning
+ Dynatune functionality allows Advanced Server to make optimal usage of
+the system resources
+ Dynatune automatically configures various resource parameters at the
+time of startup
+edb_dynatune (0-100) edb_dynatune_profile (oltp | reporting | mixed)
+This parameter determines This parameter controls performance tuning
+how Advanced Server aspects based on the type of work that the
+allocates system resources server performs
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Resource Manager
+ Prevents any single process from monopolizing resources to the detriment of
+other processes
+ A resource group can limit the % of cpu or rate of dirty buffer IO
+ Helps in managing multiple kinds of workload on your server
+edb_max_resource_groups
+This parameter edb_resource_group
+controls the
+maximum number
+Set per session to the name of the resource
+of active resource
+group in Resource Manager
+groups
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Query Planner Settings
+random_page_cost (default 4.0) - Estimated cost of a random page fetch.
+May need to be reduced to account for caching effects
+seq_page_cost (default 1.0) - Estimated cost of a sequential page fetch.
+effective_cache_size (default 4GB) - Used to estimate the cost of an index scan.
+enable_hints (default true) - Controls whether Optimizer hints embedded in SQL
+commands are utilized or not
+plan_cache_mode (default auto) – Controls custom or generic plan execution for
+prepared statements. Can be set to auto, force_custom_plan and force_generic_plan
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Write Ahead Log Settings
+wal_level (default replica) – Determines how much information is written to the WAL. Other
+values are minimal and logical
+fsync (default on) – Force WAL buffer flush at each commit, Turning this off can cause lead to
+arbitrary corruption in case of a system crash
+wal_buffers (default -1, autotune) – The amount of memory used in shared memory for WAL
+data. The default setting of -1 selects a size equal to 1/32nd (about 3%) of shared_buffers
+min_wal_size (default 80 MB) – The WAL size to start recycling the WAL files
+max_wal_size (default 1GB) – The WAL size to start checkpoint. Controls the number of WAL
+Segments(16MB each) after which checkpoint is forced
+checkpoint_timeout (default 5 minutes) – Maximum time between checkpoints
+wal_compression (default off) – The WAL of Full Page write will be compressed and written
+summarize_wal (default off) – Must be turned on for incremental backups to work
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Where To Log
+Controls logging type for a database cluster.
+log_destination
+Can be set to stderr, csvlog, jsonlog, syslog, and eventlog
+Enables logger process to capture stderr and csv logging messages
+logging_collector
+These messages can be redirected based on configuration settings
+log_directory - Directory where log files are written
+log_filename - Format of log file name (e.g. postgresql-%Y-%m-%d_%H%M%S.log)
+Log File and
+Directory Settings log_file_mode - permissions for log files
+log_rotation_age - Used for file age-based log rotation
+log_rotation_size - Used for file size-based log rotation
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+When To Log
+Messages of this severity level or above are sent to
+log_min_messages
+the server log
+Duration and
+sampling
+When a message of this severity or higher is written to the
+log_min_error_statement
+server log, the statement that caused it is logged along with it
+When a statement runs for at least this long, it is
+log_min_duration_statement
+written to the server log
+Logs any Autovacuum activity running for at
+log_autovacuum_min_duration
+least this long
+Percentage of queries(above
+log_statement_sample_rate
+log_autovacuum_min_duration) to be logged
+Sample a percentage of transactions by logging
+log_transaction_sample_rate
+statements
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+What To Log
+log_connections Log successful connections to the server log
+Log some information each time a session disconnects, including the duration of
+log_disconnections
+the session
+log_temp_files Log temporary files of this size or larger, in kilobytes
+log_checkpoints Causes checkpoints and restart points to be logged in the server log
+log_lock_waits Log information if a session is waits longer than deadlock_timeout to acquire a lock
+log_error_verbosity How detailed the logged message is. Can be set to default, terse or verbose
+Additional details to log with each line. Default is '%m [%p] ‘ which logs a timestamp
+log_line_prefix
+and the process ID
+log_statement Legal values are none, ddl, mod (DDL and all other data-modifying statements), or all
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Auditing
+ Enterprise Postgres allows you to track and analyze database activities
+using the EDB Audit Logging functionality
+ The audit logs can be configured to record information such as:
+ When a role establishes a connection to the database
+ What database objects are created, modified or deleted by a role
+ When any failed authentication attempts have occurred
+ The parameters can be specified in the postgresql.conf or
+postgresql.auto.conf files
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Where To Audit
+ edb_audit (default none) – enables or disables database auditing.
+Possible values are none or xml or csv
+ edb_audit_directory (default PGDATA/edb_audit) – specifies where the
+audit log files will be created
+ edb_audit_destination (default file) - Specifies whether the audit log
+information is to be recorded in the directory as given by the
+edb_audit_directory parameter or to the directory and file
+managed by the syslog process. Set to syslog to use the syslog
+process and its location as configured in the /etc/syslog.conf file
+ edb_audit_filename (default audit-%Y%m%d_%H%M%S) – file name of the
+audit file where the auditing information will be stored
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+What To Audit
+ edb_audit_connect (default failed) – enables auditing of database
+connection attempts by users. Possible values are none, failed or all
+ edb_audit_disconnect (default none) – enables auditing of disconnections
+by connected users. Possible values are all or none
+ edb_audit_statement (default ddl,error) – specifies auditing of different
+categories of SQL statements. Various combinations of these values may
+be specified: none, dml, insert, update, delete, truncate,
+select, error, rollback, ddl, create, drop, alter,
+grant, revoke or all
+ edb_audit_tag (default none) – specifies a string value that will be included
+in the audit log when the edb_audit parameter is set to csv or xml
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Controlling Audit Trail
+ edb_audit_rotation_day (default every) – specifies the day of the week on
+which to rotate the audit files. Possible values are
+sun,mon,tue,wed,thu,fri,sat,sun,every or none
+ edb_audit_rotation_size (default 0MB) – specifies a file size threshold in MB
+when file rotation will be forced to occur
+ edb_audit_rotation_seconds (default 0) – specifies the rotation time in seconds
+when a new logfile should be created
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Background Writer Settings
+ bgwriter_delay (default 200 ms) - Specifies time between activity rounds for the
+background writer
+ bgwriter_lru_maxpages (default 100) - Maximum number of pages that the
+background writer may clean per activity round
+ bgwriter_lru_multiplier (default 2.0) - Multiplier on buffers scanned per round.
+By default, if system thinks 10 pages will be needed, it cleans 10 *
+bgwriter_lru_multiplier of 2.0 = 20
+ Primary tuning technique is to lower bgwriter_delay
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Statement Behavior
+ search_path - This parameter specifies the order in which schemas are
+searched. The default value for this parameter is "$user", public
+ default_tablespace - Name of the tablespace in which objects are created by
+default
+ temp_tablespaces - Tablespaces name(s) in which temporary objects are
+created
+ statement_timeout - Postgres will abort any statement that takes over the
+specified number of milliseconds A value of zero (the default) turns this off
+ idle_in_transaction_session_timeout – Terminates any session with an open
+transaction that has been idle for longer than the specified duration in
+milliseconds
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Parallel Query Scan Settings
+ Advanced Server supports parallel execution of read-only queries
+ Can be enabled and configured by using configuration parameters
+ max_parallel_workers_per_gather (default 2): Enables parallel query scan
+ parallel_tuple_cost (default 0.1): Estimated cost of transferring one tuple from a parallel
+worker process to another process
+ parallel_setup_cost (default 1000): Estimates cost of launching parallel worker processes
+ min_parallel_table_scan_size (default 8MB): Sets minimum amount of table data that
+must be scanned in order for a parallel scan
+ min_parallel_index_scan_size (default 512 KB): Sets the minimum amount of index data
+that must be scanned in order for a parallel scan
+ force_parallel_mode (default off): Useful when testing parallel query scan even when
+there is no performance benefit
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Parallel Maintenance Settings
+ PostgreSQL supports parallel processes for creating an index
+ Currently this feature is only available for btree index type
+ max_parallel_maintenance_workers (default 2): Enables parallel index creation
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Vacuum Cost Settings
+ vacuum_cost_delay (default 0 ms) - The length of time, in milliseconds, that the
+process will wait when the cost limit is exceeded
+ vacuum_cost_page_hit (default 1) - The estimated cost of vacuuming a buffer
+found in the buffer pool
+ vacuum_cost_page_miss (default 10) - The estimated cost of vacuuming a
+buffer that must be read into the buffer pool
+ vacuum_cost_page_dirty (default 20) - The estimated cost charged when
+vacuum modifies a buffer that was previously clean
+ vacuum_cost_limit (default 200) - The accumulated cost that will cause the
+vacuuming process to sleep
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Autovacuum Settings
+ autovacuum (default on) - Controls whether the autovacuum launcher runs, and
+starts worker processes to vacuum and analyze tables
+ log_autovacuum_min_duration (default -1) - Autovacuum tasks running longer
+than this duration are logged
+ autovacuum_max_workers (default 3) - Maximum number of autovacuum
+worker processes which may be running at one time
+ autovacuum_work_mem (default -1, to use maintenance_work_mem) -
+Maximum amount of memory used by each autovacuum worker
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Just-in-Time Compilation
+JIT configuration parameters
+ Just-in-Time(JIT) is a core
+feature of EDB Postgres for
+accomplishing high performance
+ edb-as17-server-llvmjit
+package must be installed
+ JIT in EDB Postgres supports
+accelerating expression
+evaluation and tuple deforming
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Read-only Parameters
+ Enterprise Postgres sources are compiled using various settings
+ Various read-only configuration parameters can be used to view build settings
+block_size data_directory_mode
+server_encoding
+wal_block_size
+lc_collate
+segment_size
+max_function_args
+wal_segment_size
+max_index_keys
+data_checksums ssl_library
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Configuration File Includes
+ The postgresql.conf file can now contain include directives
+ Allows configuration file to be divided in separate files
+ Usage in postgresql.conf file:
+ include ‘filename’
+ include_dir ‘directory name’
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ Server Parameter File -
+postgresql.conf
+ Viewing and Changing Server
+Parameters
+ Configuration Parameters -
+Security, Resources and WAL
+ Configuration Parameters - Error
+Logging, Planner and Maintenance
+ Viewing Compilation Settings
+ Using File Includes
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Lab Exercise - 1
+1. You are working as a DBA. It is
+recommended to keep a backup
+copy of the postgresql.conf file
+before making any changes. Make
+the necessary changes in the server
+parameter file for the following
+settings:
+ Allow up to 200 connected users on
+the server
+ Reserve 10 connection slots for DBA
+users on the server
+ Maximum time to complete client
+authentication will be 10 seconds
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Lab Exercise - 2
+1. Working as a DBA is a challenging job
+and to track down certain activities on
+the database server, logging has to be
+implemented. Go through the server
+parameters that control logging and
+implement the following:
+ Save all the error message in a file inside
+the log folder in your cluster data directory
+(e.g. c:\edbdata or /edbdata)
+ Log all queries which are taking more than
+5 seconds to execute, and their time
+ Log the users who are connecting to the
+database cluster
+ Make the above changes and verify them
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Lab Exercise - 3
+1. Perform the following changes
+recommended by a senior DBA
+and verify them. Set:
+ Shared buffer to 256MB
+ Effective cache for indexes to
+512MB
+ Maintenance memory to 64MB
+ Temporary memory to 8MB
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Lab Exercise - 4
+ Vacuuming is an important
+maintenance activity and needs
+to be properly configured.
+Change the following
+autovacuum parameters on the
+production server. Set:
+ Autovacuum workers to 6
+ Autovacuum threshold to 100
+ Autovacuum scale factor to 0.3
+ Auto analyze threshold to 100
+ Autovacuum cost limit to 100
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Data Dictionary
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ The System Catalog Schema
+ System Information Tables and
+Views
+ System Information and
+Administration Functions
+ Oracle-like Dictionaries
+ Oracle Compatible built-in
+Packages
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+The System Catalog Schema
+ Stores information about table and other objects
+ Created and maintained automatically in pg_catalog schema
+ pg_catalog is always effectively part of the search_path
+ Contains:
+ System Tables like pg_class etc.
+ System Function like pg_database_size() etc.
+ System Views like pg_stat_activity etc.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+System Information Tables
+ \dS in psql prompt will give you the list of pg_* tables and views
+ This list is from pg_catalog schema
+pg_tables list of tables
+pg_constraints list of constraints
+pg_indexes list of indexes
+pg_trigger list of triggers
+pg_views list of views
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+More System Information Tables
+Provides summary of the contents of the server
+pg_file_settings
+configuration file
+pg_policy Stores row level security for tables
+Provides access to useful information about
+pg_policies
+each row-level security policy in the database
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+System Information Functions
+current_database() current_schema[()] pg_postmaster_start_time() version()
+current_user current_schemas(boolean) pg_current_logfile() txid_status()
+pg_conf_load_time() pg_jit_available()
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+System Administration Functions
+current_setting, set_config Return or modify configuration variables
+pg_cancel_backend Cancel a backend's current query
+pg_terminate_backend Terminates backend process
+pg_reload_conf Reload configuration files
+pg_rotate_logfile Rotate the server's log file
+pg_start_backup, pg_stop_backup Used with point-in time recovery
+pg_ls_logdir() Returns the name, size, and last modified time of each file in the log directory
+pg_ls_waldir() Returns the name, size, and last modified time of each file in the WAL directory
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+More System Administration Functions
+Disk space used by a tablespace, database, relation or total_relation
+pg_*_size
+(includes indexes and toasted data)
+pg_column_size Bytes used to store a particular value
+pg_size_pretty Convert a raw size to something more human-readable
+File operation functions. Restricted to superuser use and only on files
+pg_ls_dir, pg_read_file
+in the data or log directories
+pg_blocking_pids() Function to reliably identify which sessions block others
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+System Information Views
+pg_stat_activity Details of open connections and running transactions
+pg_locks List of current locks being held
+pg_stat_database Details of databases
+pg_stat_user_* Details of tables, indexes and functions
+pg_stat_archiver Status of the archiver process
+pg_stat_progress_basebackup View pg_basebackup progress
+pg_stat_progress_vacuum Provides progress reporting for VACUUM operations
+pg_stat_progress_analyze Provides progress details for ANALYZE operations
+pg_hba_file_rules Provides a summary of the contents of the client authentication configuration file, pg_hba.conf
+pg_stat_io Provides I/O information
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Built-in Packages
+ Enterprise Postgres (Oracle Compatible) provides built-in packages compatible with Oracle
+ Over 24 of most commonly used Oracle built-in packages are available in Enterprise Postgres
+ These built-in packages provide administration and maintenance utilities
+DBMS_AQADM
+DBMS_ALERT DBMS_AQ DBMS_CRYPTO DBMS_JOB DBMS_LOB
+DBMS_LOCK DBMS_MVIEW DBMS_OUTPUT DBMS_PIPE DBMS_PROFILER DBMS_RANDOM
+DBMS_RLS DBMS_SESSION DBMS_SCHEDULER DBMS_SQL DBMS_UTILITY DBMS_REDACT
+UTL_ENCODE UTL_FILE UTL_HTTP UTL_MAIL UTL_SMTP UTL_URL
+DBMS_PRIVILEGE
+UTL_RAW DBMS_ASSERT DBMS_XMLDOM HTP AND HTF
+_CAPTURE
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+System Catalog Views
+ Enterprise Postgres database stores user data in user tables
+ Enterprise Postgres database stores internal information about all the objects and events in
+the catalog tables
+ System catalog tables are kept in separate internal schemas
+ Enterprise Postgres provides Oracle compatible catalog view (data dictionaries)
+ These views can be queried to find:
+ Definition of schema objects
+ User’s information
+ Privileges
+ Other general database information
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+sys Schema
+ sys schema contains Oracle compatible
+Catalog Views
+View Description
+User’s view (what is in your schema; what you
+user_*
+own)
+all_* Expanded user’s view (what you can access)
+Database administrator’s view (what is in
+dba_*
+everyone’s schemas)
+edb$ Performance-related data
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ The System Catalog Schema
+ System Information Tables
+and Views
+ System Information and
+Administration Functions
+ Oracle-like Dictionaries
+ Oracle Compatible built-in
+Packages
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 1
+1. You are working with different
+schemas in a database. After a
+while you need to determine all
+the schemas in your search
+path. Write a query to find the
+list of schemas currently in
+your search path.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 2
+1. You need to determine the
+names and definitions of all
+of the views in your schema.
+Create a report that retrieves
+view information - the view
+name and definition text.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 3
+1. Create a report of all the users
+who are currently connected. The
+report must display total session
+time of all connected users.
+2. You found that a user has
+connected to the server for a very
+long time and have decided to
+gracefully kill its connection. Write
+a statement to perform this task.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise - 4
+1. Write a query to display the
+name and size of all the
+databases in your cluster.
+Size must be displayed
+using a meaningful unit.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Creating and
+Managing Databases
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ Object Hierarchy
+ Users and Roles
+ Tablespaces
+ Databases
+ Access Control
+ Creating Schemas
+ Schema Search Path
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Object Hierarchy
+Database
+Cluster
+Users/Groups
+Database Tablespaces
+(Roles)
+Catalogs Schema Extensions
+Table View Sequence Functions Event Triggers
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+

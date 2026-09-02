@@ -1,0 +1,380 @@
+Source PDF: EDB Postgres AI Database Advanced v17_Student_144dpi_75%.pdf
+Pages: 51 to 100
+========================================
+
+Database Analysis Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+I/O Analysis Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Object Activity Analysis Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Operating System Analysis Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Server Log Analysis Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Session Activity Analysis Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+System Wait Analysis Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Storage Analysis Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Streaming Replication Analysis Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Postgres Enterprise Manager Alerting
+PEM monitors system statistics and conditions.
+The PEM server includes several pre-defined alerts that
+are actively monitoring your servers.
+PEM also provides an interface that allows you to create
+customized alerts.
+Alerts are triggered based on configured thresholds.
+Alerts are displayed in PEM web interface and notification
+can be configured for email or SNMP trap.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Managing Alerts
+ Manage Alerts tab allows you to define custom alerts or modify existing alerts.
+ Click on Manage Alerts... from the Management menu
+ Click any PEM agent or database server in Browser Tree to view default alerts.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Log Manager
+PEM Log manager can be used to configure, enable, and disable
+error logging for Postgres instances
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Log Manager – Select Servers
+Postgres Instances can be selected for configuring logging
+You must provide the Service ID
+on the PEM Server dialog while
+registering new PostgreSQL or
+Enterprise Postgres instances
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Log Manager – Log Settings
+Specify configuration details for each server
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Log Manager – Where, When and What to Log
+Configure log settings for each server
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Log Manager – Apply Changes
+Configure schedule or apply changes now
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Server Log Dashboard
+Use Server Log dashboard to view logged information
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Postgres Log Analysis Expert
+The Postgres Log Analysis Expert analyzes the log files of
+servers that are registered with PEM.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Sample Log Analysis Report
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Sample Log Analysis Report
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Sample Log Analysis Report
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+SQL Profiler
+ SQL Profiler is a graphical wizard
+available in PEM
+ It can be used to:
+ Capture workloads in a SQL trace
+ Monitor and analyze SQL
+ Diagnose slow-running queries
+ View the query execution statistics
+ Schedule a SQL trace to run during heavy
+workloads
+ Get advice on indexes
+ SQL Profiler plug-in must be installed
+and configured for each Postgres
+database
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Configure SQL Profiler
+ SQL Profiler can be used to trace workloads for Enterprise Postgres
+ Install SQL Profiler package:
+ sudo dnf -y install edb-as17-server-sqlprofiler
+ Required parameter change in postgresql.conf(requires restart):
+ shared_preload_libraries = $libdir/sql-profiler
+ Enabling the extension in maintenance database:
+ psql -p 5444 -d edb -U enterprisedb
+ CREATE EXTENSION sql_profiler;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Starting SQL Profiler
+ After configuration, click on the database in object browser
+ Go to the Management menu, go to SQL Profiler and click “Create Trace”
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Creating a New SQL Trace
+ You can use the Create trace dialog
+to define a new SQL Trace
+ Specify SQL trace setting using
+Trace options, Schedule and
+Periodic job options tabs
+ You can use trace options tab for
+controlling:
+ Trace Name
+ Filter SQL run by one or more user
+ Filter for tracing SQL running on a
+specific database
+ Trace file size
+ Run now or schedule later
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Viewing the SQL Profiler Report
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Performance Diagnostic
+ The Performance Diagnostic
+dashboard can be used to view
+and analyze wait events data
+ The wait events data is gathered
+using EDB Wait States module
+ This data includes information
+about locking, IO, CPU and SQL
+queries
+ The performance data is
+depicted on easy-to-read graphs
+with various options available to
+easily point to sudden spike in
+the wait events
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Prerequisites for Performance Diagnostic
+PEM uses EDB Wait States Extension for data collection.
+Install required package: edb-as<X>-server-edb-modules
+Changes required in the postgresql.conf file: shared_preload_libraries= '$libdir/edb_wait_states'
+Restart the database server, and then create
+CREATE EXTENSION edb_wait_states;
+the extension in the maintenance database:
+You must have super user privileges to access the Performance Diagnostic dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Open Performance Diagnostics Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+View Performance Diagnostics Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+View Wait Events using Performance Diagnostics Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+View Wait Events using Performance Diagnostics Dashboard
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Exercise 1
+ You have been asked to install and
+configure Postgres Enterprise Manager and
+monitor a Postgres instance running on a
+Linux machine
+ Prepare a Linux machine for PEM Server installation
+ Install and configure a backend database
+ Install and configure PEM server
+ Open PEM Web Interface and logon to PEM Server
+ Optional
+ Install PEM Agent on the managed host
+ Register PEM Agent with PEM Server
+ Verify PEM Agent information in PEM Web Interface
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+SQL Tuning
+©©EEDDBB 22002255 —— AALLLL RRIIGG HHTTSS RREESSEERRVVEEDD..
+
+Module Objectives
+ SQL queries planning and execution
+ Find and tune slow running SQL
+ Types of Indexes and their usage
+ Writing an efficient SQL query
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Statement Processing - SQL Engine
+Optimize
+ Check syntax  Execute query based on
+query plan
+ Call traffic cop
+ Identify query type  Planner generates a plan
+ Command processor if  Uses database statistics
+needed
+ Query cost calculation
+ Break query into tokens  Choose best plan
+Parse Execute
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Common Query Performance Issues
+Full table scans
+Bad SQL
+Sorts using disk
+Join orders
+Old or missing statistics
+I/O issues
+Bad connection management
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+SQL Tuning Goals
+Identify Identify bad or slow SQL
+Find Find the possible performance issue in a query
+Reduce Reduce total execution time
+Reduce Reduce the resource usage of a query
+Determine Determine most efficient execution plan
+Balance or
+Balance or parallelize the workload
+parallelize
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+SQL Tuning Steps
+Review
+Review the Review
+Identify Optimizer Restructure Add /
+Query Final
+Slow Statistics SQL Remove
+Execution Execution
+Queries and Statements Indexes
+Plan Plan
+Behavior
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Step 1- Identify Slow Queries
+©©EEDDBB 22002255 —— AALLLL RRIIGGHHTTSS RREESSEERRVVEEDD..
+
+Tracking Slow Queries
+log_min_duration_statement tracks slow running SQL
+Use PEM’s Log Manager Wizard to configure logging of slow queries
+Use PEM’s Postgres Log Analysis Expert Wizard to analyze log messages
+Run a PEM’s SQL Profiler trace to find, troubleshoot, and optimize slow
+running SQL
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Step 2 - Review the Query
+Execution Plan
+©©EEDDBB 22002255 —— AALLLL RRIIGGHHTTSS RREESSEERRVVEEDD..
+
+Execution Plan
+ An execution plan shows the detailed steps necessary to execute a SQL
+statement
+ Planner is responsible for generating the execution plan
+ The Optimizer determines the most efficient execution plan
+ Optimization is cost-based, cost is estimated resource usage for a plan
+ Cost estimates rely on accurate table statistics, gathered with ANALYZE
+ Costs also rely on seq_page_cost, random_page_cost, and others
+ The EXPLAIN command is used to view a query plan
+ EXPLAIN ANALYZE is used to run the query to get actual runtime stats
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Execution Plan Components
+ Syntax: Execution Plan Components:
+EXPLAIN [ ( option [, ...] ) ] statement
+ Cardinality - Row Estimates
+EXPLAIN [ ANALYZE ] [ VERBOSE ] statement
+ Access Method - Sequential or Index
+where option can be one of:
+ Join Method - Hash, Nested Loop etc.
+ANALYZE [ boolean ]
+VERBOSE [ boolean ]
+ Join Type, Join Order
+COSTS [ boolean ]
+SETTINGS [ boolean ]
+ Sort and Aggregates
+GENERIC_PLAN [ boolean ]
+BUFFERS [ boolean ]
+SERIALIZE [ { NONE | TEXT | BINARY } ]
+WAL [ boolean ]
+TIMING [ boolean ]
+SUMMARY [ boolean ]
+MEMORY [ boolean ]
+FORMAT { TEXT | XML | JSON | YAML }
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Explain Example - One Table
+ Example
+postgres=# EXPLAIN SELECT * FROM emp;
+QUERY PLAN
+------------------------------------------------------
+Seq Scan on emp (cost=0.00..1.14 rows=14 width=145)
+ The numbers that are quoted by EXPLAIN are:
+ Estimated start-up cost
+ Estimated total cost
+ Estimated number of rows output by this plan node
+ Estimated average width (in bytes) of rows output by this plan node
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Explain Example - Multiple Tables
+ Create the tables
+ =# CREATE TABLE city (cityid numeric(5) primary key, cityname varchar(30));
+ =# CREATE TABLE office(officeid numeric(5) primary key, cityid numeric(5) references
+city(cityid));
+ Let’s see the plan without data and updating statistics:
+ =# EXPLAIN ANALYZE SELECT city.cityname, office.officeid, office.cityid FROM
+city,office WHERE office.cityid = city.cityid;
+ Output:
+ Hash Join (cost=25.30..71.16 rows=1510 width=102) (actual time=0.002..0.002 rows=0
+loops=1)
+ Hash Cond: (office.cityid = city.cityid)
+ -> Seq Scan on office (cost=0.00..25.10 rows=1510 width=24) (actual
+time=0.001..0.001 rows=0 loops=1)
+ -> Hash (cost=16.80..16.80 rows=680 width=90) (never executed)
+ -> Seq Scan on city (cost=0.00..16.80 rows=680 width=90) (never executed)
+ Planning time: 0.456 ms
+ Execution time: 0.067 ms
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Explain Example – Load and Analyze
+ Load data:
+ =# INSERT INTO city
+values(1,'Edmonton'),(2,'Calgary'),(3,'SherwoodPark'),(4,'STAlbert');
+ =# INSERT INTO office VALUES(generate_series(1,100),4);
+ =# INSERT INTO office VALUES(generate_series(101,200),3);
+ =# INSERT INTO office VALUES(generate_series(201,300),2);
+ =# INSERT INTO office VALUES(generate_series(301,400),1);
+ Update the statistics for city and office table:
+ =# ANALYZE city;
+ =# ANALYZE office;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Explain Example – Explain Analyze
+ Plan:
+=# EXPLAIN ANALYZE SELECT city.cityname, office.officeid,
+office.cityid FROM city, office WHERE office.cityid =
+city.cityid;
+Hash Join (cost=1.09..12.59 rows=400 width=20) (actual time=0.057..0.770 rows=400
+loops=1)
+Hash Cond: (office.cityid = city.cityid)
+-> Seq Scan on office (cost=0.00..6.00 rows=400 width=10) (actual
+time=0.012..0.128 rows=400 loops=1)
+-> Hash (cost=1.04..1.04 rows=4 width=15) (actual time=0.014..0.014 rows=4
+loops=1)
+Buckets: 1024 Batches: 1 Memory Usage: 1kB
+-> Seq Scan on city (cost=0.00..1.04 rows=4 width=15) (actual
+time=0.002..0.005 rows=4 loops=1)
+Planning time: 0.577 ms
+Execution time: 0.893 ms
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PEM - Query Tool’s Visual Explain
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Reviewing Explain Plans
+Examine the various costs at different levels in the explain plan
+Look for sequential scans on large tables
+All sequential scans are not inefficient
+Check whether a join type is appropriate for the number of rows returned
+Check for indexes used in the explain plan
+Examine the cost of sorting and aggregations
+Review whether views are used efficiently
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+

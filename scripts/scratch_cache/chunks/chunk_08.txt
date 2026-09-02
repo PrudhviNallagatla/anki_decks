@@ -1,0 +1,620 @@
+Source PDF: EDB Postgres AI Database Essentials v17_Student_144dpi_75%.pdf
+Pages: 1 to 50
+========================================
+
+EDB Postgres AI
+Database Essentials v17
+©©©EEEDDDBBB 222000222555 ——— AAALLLLLL RRRIIIGGGHHHTTTSSS RRREEESSSEEERRRVVVEEEDDD...
+
+Course Agenda
+ Introduction and Architectural Overview  Database Security
+ System Architecture  Monitoring and Admin Tools Overview
+ Enterprise Postgres Installation  SQL Primer
+ User Tools - Command Line Interfaces  Backup and Recovery
+ Database Clusters  Routine Maintenance Tasks
+ Database Configuration  Data Loading
+ Data Dictionary  Data Replication and High Availability
+ Creating and Managing Database Objects
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Introduction
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ EDB Postgres AI Platform
+ Facts about PostgreSQL and Enterprise
+Postgres (Oracle Compatible)
+ Major Features
+ General Database Limits
+ Common Database Object Names
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Operate Efficiently Innovate Faster
+Cloud agility in any environment Accelerated time-to-market
+▪ ▪
+Unified management boosts Secure open source flexibility
+▪ ▪
+productivity 30% AI-driven assistance and
+▪
+90% better value than cloud automation
+▪
+databases
+EDB Postgres AI
+Lead Your Market Grow Revenue
+Fastest path to launching AI Always-on applications
+▪ ▪
+applications with up to 99.999% HA
+Competitive edge Business growth
+▪ ▪
+Ethical AI practices Customer experience
+▪ ▪
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+EDB POSTGRES® AI
+YOUR SOVEREIGN DATA AND AI PLATFORM
+BUILD WITHOUT ACCELERATE AI INITIATIVES GET REAL-TIME INSIGHTS
+BOUNDARIES AND GROW REVENUE WITHOUT COMPLEXITY
+A single, sovereign data Secure, rapid, low-code, fully Rapid analytics and open
+platform for any workload integrated AI Factory ecosystem integrations
+DRIVE OPERATIONAL EFFICIENCY WITH HYBRID MANAGEMENT
+Cloud-native automation and deep observability across deployments from a single pane of glass
+DELIVER CONTROLLED OUTCOMES WITH COMPLETE SOVEREIGNTY
+Flexible deployment across hybrid software, sovereign data and AI factory, and managed platform
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+EDB Postgres® AI
+Database Analytics Accelerator AI Factory Hybrid Management
+ENTERPRISE POSTGRES SERVER
+ANALYTICS ENGINE VECTOR ENGINE HYBRID OBSERVABILITY
+ORACLE COMPATIBLE SERVER LAKEHOUSE CONNECTOR AI PIPELINE HYBRID DBAAS
+COMMUNITY POSTGRESQL SERVER SUPPORT FOR GREENPLUM GENAI BUILDER DISTRIBUTED HA (99.999%)
+WORKLOADS
+AGENT STUDIO MIGRATIONS
+MULTI-MODEL EXTENSIONS
+MODEL SERVING
+MANAGEMENT & OBSERVABILITY
+KUBERNETES OPERATORS
+SUPPLY CHAIN SECURITY
+MIGRATION TOOLS
+HIGH AVAILABILITY
+Deploy SOVEREIGN DATA AND AI FACTORY HYBRID SOFTWARE MANAGED PLATFORM
+Anywhere
+INTEGRATION PARTNERS: AWS, GCP, AZURE, RED HAT OPENSHIFT, IBM, SUPERMICRO, NVIDIA, GRIPTAPE
+Sovereign
+MANAGED SERVICES PILOT TO PRODUCTION SLAS OUTCOME EXECUTION
+Assurance
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+PostgreSQL
+The open-source database of choice
+Performance Scalability Extensibility Community-driven
+Handles enterprise Multiple technical Supported by a wide Multiple companies
+workloads with 50% options for operating array of extensions and individuals
+improvement in the Postgres at scale plus multiple SQL contribute to the
+last 4 years and NoSQL data project and drive
+models innovation
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Facts about PostgreSQL
+The world’s most advanced open-source database
+Designed for extensibility and customization
+ANSI/ISO compliant SQL support
+Actively developed for more almost 40 years
+ University Postgres (1986-1993)
+ Postgres95 (1994-1995)
+ PostgreSQL (1996-current)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Enterprise Postgres (Oracle Compatible)
+Enterprise Postgres
+ Oracle Compatibility - Compatibility for schemas, data types, indexes, users,
+Oracle Compatibility roles, partitioning, packages, views, PL/SQL triggers, stored procedures,
+functions, and utilities
+ Additional Security - Password policy management, session tag auditing, data
+Additional Security
+redaction, SQL injection protection, and procedural language code obfuscation
+Developer Productivity
+ Developer Productivity - Over 200 pre-packaged utility functions, user-defined
+object types, autonomous transactions, nested tables, synonyms, advanced
+DBA Productivity queueing
+ DBA Productivity - Throttle CPU and I/O at the process level, over 55 extended
+catalog views to profile all the objects and processing that occurs in the
+Performance
+database
+ Performance - Query optimizer hints, SQL session/system wait diagnostics
+Replication Enhancements
+ Replication Enhancements - Enables High Availability functionality such as Group
+Commit, Commit at Most Once and Eager all-node synchronous replication,
+PostgreSQL
+timestamp-based snapshots, estimates for replication catch-up times, selective
+backup of a single database, hold back freezing to assist resolution of
+UPDATE/DELETE conflicts, multi-node PITR
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Major Features
+Portable:
+ Written in ANSI C
+ Supports Windows, Linux, Mac OS/X and major UNIX
+platforms
+Reliable:
+ ACID Compliant
+ Supports Transactions and Savepoints
+ Uses Write Ahead Logging (WAL)
+Scalable:
+ Uses Multi-version Concurrency Control
+ Table Partitioning and Tablespaces
+ Parallel Sequential Scans, DDL(Table and Index Creation)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Major Features (continued)
+Secure: Advanced:
+ Employs Host-Based Access Control  Supports Triggers, Functions and Procedures
+ Provides Object-Level Permissions and Row  Supports Custom Procedural Languages
+Level Security
+ Upgrade using pg_upgrade
+ Supports SSL Connections and Logging
+ Unlogged Tables and Materialized Views
+ Transparent Data Encryption - TDE
+ Just-in-Time (JIT) Compilation
+Recovery and Availability:
+ Streaming Replication, Logical Replication
+and Replication Slots
+ Replication Slots, Sync or Async Options
+ Supports Hot-Backup, pg_basebackup,
+incremental backup and Point-in-Time
+Recovery
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+General Database Limits
+Limit Value
+Maximum Database Size Unlimited
+Maximum Table Size 32 TB
+Maximum Row Size 1.6 TB
+Maximum Field Size 1 GB
+Maximum Rows per Table Unlimited
+Maximum Columns per Table 250-1600 (Depending on Column types)
+Maximum Indexes per Table Unlimited
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Common Database Object Names
+Industry Term Postgres Term
+Table or Index Relation
+Row Tuple
+Column Attribute
+Data Block Page (when block is on disk)
+Page Buffer (when block is in memory)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Lab Setup Guidelines
+ All the instructor demos and
+labs are based on Linux
+ Rocky 9 machine or virtual
+machine with at least 1 GB
+RAM and 20 GB storage space
+is recommended
+ Participants using Linux must
+follow instructor during the
+installation module and install
+Enterprise Postgres
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ EDB Postgres AI Platform
+ Facts about PostgreSQL and Enterprise
+Postgres (Oracle Compatible)
+ Major Features
+ General Database Limits
+ Common Database Object Names
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+System
+Architecture
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ Architectural Summary  Commit and Checkpoint
+ Process and Memory Architecture  Statement Processing
+ Utility Processes  Physical Database Architecture
+ Connection Request-Response  Data Directory Layout
+ Disk Read Buffering  Installation Directory Layout
+ Disk Write Buffering  Page Layout
+ Background Writer Cleaning Scan
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Architectural Summary
+Postgres uses processes, not threads
+The “Postmaster” process acts as a supervisor
+Several utility processes perform background work
+ postmaster starts them and restarts them if they die
+One backend process is created per user session
+ postmaster listens for new connections
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Process and Memory Architecture
+Postmaster
+Shared Memory
+Shared Buffers Process Array
+WAL Buffers
+BGWRITER DBMS_AQ
+Data WAL Archived
+Files Segments WAL
+CHECKPOINTER ARCHIVER
+AUTOVACUUM LOGGER
+Error Log
+LOGICAL Files
+WAL WRITER
+REPLICATION
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Cluster
+Postmaster Process
+Master Process / Listener Process Port = 5444
+Shared Memory
+work_mem, autovaccum_work_mem
+shared_buffers = 1/4 of Unix Memory wal_buffers = 1/16 of shared_buffers temp_buffers, maintenance _work_memory
+Shared Buffers WAL Buffers
+Trans
+Process Memory per
+Session when needed
+CHECKPOINT COMMIT
+BACKGROUND
+WAL WRITER CHECKPOINTER LOGGER
+WRITER
+Data Files Wal Segments Log Messages
+AUTOVACUUM
+$PGDATA/base $PGDATA/pg_wal $PGDATA/log
+LOGICAL
+REPLICATION
+ARCHIVER
+Environment Variables
+Archives of
+PGPATH, PGPORT,
+WAL Segments
+PGDATA, PGDATABASE,
+PGUSER
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Multiple Instances On One Server
+IP Address
+Software Install Directory
+Cluster / Instance Cluster / Instance
+Port = 5444 Port = 5434
+Directory = /var/lib/edb/xx/data Directory = /edbstore
+Config = postgresql.conf Config = postgresql.conf
+Security = pg_hba.conf Security = pg_hba.conf
+---------------------------------------------------- ----------------------------------------------------
+Processes : Postmaster, Processes : Postmaster,
+Checkpointer, Logger, etc. Checkpointer, Logger etc.
+---------------------------------------------------- ----------------------------------------------------
+Memory : Shared Buffers, WAL Memory : Shared Buffers, WAL
+Buffers, Temporary Buffer, Work Buffers, Temporary Buffer, Work
+Memory Memory
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Utility Processes
+ Background writer
+ Writes dirty data blocks to disk
+ WAL writer
+ Flushes write-ahead log to disk
+ Checkpointer
+ Automatically performs a checkpoint based on
+config parameters
+ Autovacuum launcher
+ Starts Autovacuum workers as needed
+ Autovacuum workers
+ Recover free space for reuse
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+More Utility Process
+ Logger - Logging collector
+ Routes log messages to syslog, eventlog, or log files
+ Archiver
+ Archives write-ahead log files
+ Logical replication launcher
+ Starts logical replication apply process for logical
+replication
+ Dbms_aq launcher
+ Collects information for queueing functionality of
+advanced server
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Postmaster as Listener
+Client requests a
+connection
+Postmaster
+ Postmaster is the main process called postgres
+ Listens on 1, and only 1, tcp port
+ Receives client connection requests
+Shared Memory
+25
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+User Backend Process
+ Postmaster process spawns a new Postmaster
+server process for each connection
+request detected
+ Communication is done using
+semaphores and shared memory
+work_mem
+Postgres
+ Authentication - IP, user and password
+Shared Memory
+ Authorization - Verify permissions
+26
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Respond to Client
+Postmaster
+work_mem
+Postgres
+ User backend process called postgres
+ Callback to client
+Shared Memory
+ Waits for SQL
+ Query is transmitted using plain text
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Disk Read Buffering
+Postgres Postgres Postgres
+ EDB Postgres buffer cache
+(shared_buffers) reduces OS reads
+Shared (data) Buffers
+ Read the block once, then examine it
+many times in cache
+Stable
+Databases
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Disk Write Buffering
+Postgres Postgres Postgres
+ Blocks are written to disk only
+when needed:
+Shared (data) Buffers
+ To make room for new blocks
+Shared Memory
+ At checkpoint time
+CHECKPOINT
+Stable
+Databases
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Background Writer Cleaning Scan
+Postgres Postgres Postgres
+ Background writer scan attempts
+to ensure an adequate supply of
+clean buffers Shared (data) Buffers
+ Back end write dirty buffers as
+need
+BGWRITER
+Stable
+Databases
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Write Ahead Logging (WAL)
+Postgres Postgres Postgres
+ Back end write data to WAL buffers
+Shared Memory
+ Flush WAL buffers periodically
+(WAL writer), on commit, or when
+Shared (data) WAL
+buffers are full Buffers Buffers
+ Group commit
+Transaction
+Stable Log
+Databases
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Transaction Log Archiving
+Postgres Postgres Postgres
+ Archiver spawns a task to copy
+Shared Memory
+away pg_wal log files when full
+Shared (data) WAL
+Buffers Buffers
+Transaction
+Stable Log
+Databases
+Archive
+Command
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Commit and Checkpoint
+Before commit Uncommitted updates are in memory
+WAL buffers are written to the disk
+After commit (write-ahead log file) and shared
+buffers are marked as committed
+Modified data pages are written from
+After checkpoint
+shared memory to the data files
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Before Commit
+ Updated pages are in Shared Buffers
+ Transaction is logged in the WAL Buffers
+Data Pages Transaction Pages
+Shared Buffers WAL Buffers
+Write Ahead Log File
+Updated Pages
+Available Pages
+©©EEDDBB 22002255 —— AALLLL RRIIGGHHTTSS RREESSEERRVVEEDD..
+
+After Commit
+ Shared buffers are marked as committed
+ WAL buffers are written to disk (write-ahead log file)
+Data Pages Transaction Pages
+Shared Buffers WAL Buffers
+C C
+C
+WAL Write Ahead Log File
+WRITER
+©©EEDDBB 22002255 —— AALLLL RRIIGGHHTTSS RREESSEERRVVEEDD..
+
+After Checkpoint
+ Modified data pages are written from shared memory to the data files
+ A Checkpoint record is written to the WAL File used for recovery
+Data Pages Transaction Pages
+Shared Buffers WAL Buffers
+Database Files Write Ahead Log File
+BACKGROUND
+WRITER
+CP
+©©EEDDBB 22002255 —— AALLLL RRIIGGHHTTSS RREESSEERRVVEEDD..
+
+Statement Processing
+Optimize
+ Check syntax  Execute query based on
+query plan
+ Call traffic cop
+ Identify query type  Planner generates a plan
+ Command processor if  Uses database statistics
+needed
+ Apply Optimizer Hints
+ Break query into tokens  Query cost calculation
+ Choose best plan
+Parse Execute
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Physical Database Architecture
+ Database cluster is a collection of databases
+managed by single server instance
+ Each cluster has a separate
+ Data directory
+ TCP port
+ Set of processes
+ A cluster can contain multiple databases
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Installation Directory Layout
+ Default Installation Directory Location:
+ Linux - /usr/edb/as17
+ Windows – C:\Program Files\edb\as17
+ bin – Programs
+ share – Shared data
+ include – Header files
+ lib or lib64 – Libraries
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Database Cluster Data Directory Layout
+DATA
+Status Configuration Postmaster
+global base pg_tblsc pg_wal pg_log log
+Directories Files Info Files
+Cluster wide Contains Symbolic link to Write ahead Startup logs Error logs pg_xact, pg_multiexact, postgresql.conf,
+database Databases tablespaces logs pg_snapshots, pg_stat, pg_hba.conf,
+objects pg_subtrans,pg_notify, pg_ident.conf,
+Summaries
+pg_serial, pg_replslot, postgresql.auto.conf
+pg_logical,
+pg_dynshmem
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Physical Database Architecture
+File-per-table, file-per-index
+A table-space is a directory
+Each database that uses that table-space gets a subdirectory
+Each relation using that table-space/database combination gets one or more files, in 1GB chunks
+Additional files are used to hold auxiliary information (free space map, visibility map)
+Each file name is a number (see pg_class.relfilenode)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Sample - Data Directory Layout
+14297
+14307
+14300
+DDaattaabbaassee OOIIDD
+14405
+base
+14312 14498
+DATA
+pg_tblsc
+16650
+Tablespace OID
+14299
+/storage/pg_tab
+14301
+14307
+16700
+16651 16701
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Page Layout
+ Page header  Row/index entry
+ General information about the page  The actual row or index entry data
+ Pointers to free space  Special
+ 24 bytes long
+ Index access method specific data
+ Row/index pointers  Empty in ordinary tables
+ Array of offset/length pairs pointing to the actual
+rows/index entries
+ 4 bytes per item
+ Free space
+ Unallocated space
+ New pointers allocated from the front, new
+rows/index entries from the rear
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Page Structure
+Page
+Item Item Item
+Header
+8K
+Tuple
+Tuple Tuple Special
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ Architectural Summary  Background Writer Cleaning Scan
+ Shared Memory  Commit and Checkpoint
+ Inter-processes Communication  Physical Database Architecture
+ Statement Processing  Data Directory Layout
+ Utility Processes  Installation Directory Layout
+ Disk Read Buffering  Page Layout
+ Disk Write Buffering
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Enterprise Postgres
+Installation
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Module Objectives
+ Deployment Options
+ OS User and Permissions
+ Package Installation
+ Installation of Enterprise
+Postgres
+ Setting Environmental Variables
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Deployment Options
+Deployment methods for Enterprise Postgres and supported Tools
+EDB Postgres AI for Native packages or
+CloudNativePG Cluster installers
+Operator for managing EDB Repository can be
+and deploying Enterprise used for YUM and RPM
+Postgres based installation.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+OS User and Permissions
+ Enterprise Postgres runs as a daemon (Unix / Linux) or service (Windows)
+ The Enterprise Postgres Installation requires superuser/admin access
+ All processes and data files must be owned by an OS user
+ During installation an enterprisedb locked user will be created on Linux
+ On Windows a password is required
+ SELinux must be set to permissive mode on systems with SELinux
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+The enterprisedb User Account
+ It is advised to run Enterprise Postgres under a separate user account
+ This user account should only own the data directory that is managed by
+the server
+ The useradd or adduser Unix command can be used to add a user
+ The user account named enterprisedb is used throughout this training
+[root@Base ~]# useradd enterprisedb
+[root@Base ~]# passwd enterprisedb
+Changing password for user enterprisedb.
+New password:
+Retype new password:
+passwd:
+all authentication tokens updated successfully.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+

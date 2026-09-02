@@ -1,0 +1,233 @@
+Source PDF: EDB Postgres AI Database Essentials v17_Student_144dpi_75%.pdf
+Pages: 401 to 421
+========================================
+
+Monitoring Basics
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Monitoring Replication
+ pg_stat_replication
+ Show connected replicas and their status on the primary
+ pg_stat_subscription
+ Shows the status of subscription when using logical replication
+ pg_stat_wal_receiver
+ Shows the WAL receiver process status on Replica
+ Recovery information functions:
+ pg_is_in_recovery()
+ pg_current_wal_lsn
+ pg_last_wal_receive_lsn
+ pg_last_xact_replay_timestamp()
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Example - Monitoring Replication
+ Execute:
+=# SELECT * FROM pg_stat_replication;
+ Find lag (bytes):
+=# SELECT pg_wal_lsn_diff(sent_lsn, replay_lsn) FROM
+pg_stat_replication;
+ Find lag (seconds):
+=# SELECT CASE WHEN pg_last_wal_receive_lsn() =
+pg_last_wal_replay_lsn()
+THEN 0 ELSE
+EXTRACT (EPOCH FROM now() -pg_last_xact_replay_timestamp())
+END AS stream_delay;
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Recovery Control Functions
+Name Return Type Description
+pg_is_wal_replay_paused() bool True if recovery is paused.
+pg_wal_replay_pause() void Pauses recovery immediately.
+pg_wal_replay_resume() void Restarts recovery if it was paused.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+EDB Postgres AI
+High Availability Overview
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+EDB Postgres AI High Availability
+The most advanced replication solution for Postgres
+Maintain extreme Upgrade with Choose the level
+high availability near zero downtime of consistency
+Postgres clusters deployed with Rolling upgrades of application and Robust capabilities provide
+EDB Postgres AI High Availability database software eliminate the flexibility to meet application
+keep top tier enterprise largest source of downtime data loss requirements
+applications running
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Always ON
+Top-tier enterprise applications are critical to an organization’s success in all
+regions where business is conducted, whether a single region or globally
+The application The application The availability of The application data
+represents a must perform well the application must always be
+promise to its for a good user directly ties to current and
+customers experience revenue generation available, or the
+user loses trust
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+BDR is more than
+Bi-directional Replication
+MULTI-MASTER REPLICATION ENABLING
+HIGHLY AVAILABLE AND GEOGRAPHICALLY
+DISTRIBUTED POSTGRES CLUSTERS
+ Logical replication of data and schema
+enabled via standard Postgres extension
+ Data consistency options that span from
+immediate to eventual consistency
+ Robust tooling to manage conflicts, monitor
+performance, and validate consistency
+ Deploy natively to cloud, virtual, or bare
+metal environments
+ Geo-fencing, allowing selectively replicate
+data for security compliance and
+jurisdiction control.
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+High Availability Features
+Multi-Master
+Synchronous or Flexible Always-ON
+Row Level
+Asynchronous Deployment DDL Replication DDL and Row Filters
+Consistency
+Replication for Architectures
+Postgres
+Configurable Conflict-free
+Database Rolling
+Parallel Apply Auto Partitioning Column-level Replicated Data
+Upgrades
+Conflict Resolution Types (CRDTs)
+Transactions State Next Generation
+Subscriber-only Open Telemetry
+Tracking Across PGD CLI Connection Routing
+Nodes Integration
+Failovers using PGD-Proxy
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Replication Server Overview
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Postgres Replication Server
+Single Master Replication (SMR) for Reporting or Migration
+Master
+Enterprise Postgres
+Read/Write
+PostgreSQL
+Oracle®
+SQL Server®
+ Data filtering
+ Scheduling
+Enterprise Postgres
+Read
+PostgreSQL
+Oracle®
+SQL Server®
+Replica
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Replication Server
+REPLICATES BETWEEN POSTGRES AND NON-POSTGRES DATABASES
+ Integrate with Oracle or SQL Server
+databases to offload reporting or to
+feed data to legacy applications
+ Flexibility to replicate a subset of
+data from the source database
+ Graphical user interface provides
+easy configuration and management
+ Includes utility to validate data
+consistency between the source and
+Replication from SQL Server
+target databases
+or Oracle to Postgres
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Replication Server Features
+ Replicate Oracle or SQL Server data to  Trigger and Log-based replication
+Enterprise Postgres (Oracle Compatible)
+ Snapshot and continuous modes
+ Distributed multi-Publication/Subscription
+Architecture
+ Define and apply row filters
+ Synchronize data across geographies
+ Flexible replication scheduler
+ Replicate tables and sequences
+ Replication History Viewer
+ Controlled switchover and failover
+ Graphical Replication Console and CLI
+ Supports cascading replication
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Replication Manager Overview
+©© EE DDBB 22 00 22 55 —— AA LLLL RR II GG HHTT SS RR EE SSEE RR VV EE DD..
+
+Replication Manager(repmgr)
+Cluster Management tool for Postgres
+Maintain high Perform upgrades Open Source
+availability using switchovers
+Automatic Failover to Add/remove replicas Open Source from
+Replica in a Streaming and switchover of EnterpriseDB and
+Replication Environment primary instance licensed under GPL
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+repmgr Features
+ Open-source tool for managing replication and
+failover
+ Supports Postgres Streaming Replication
+ repmgr tool for setup:
+ Add/remove replicas
+ Perform switchovers
+ Promote a replica
+ repmgrd tool:
+ Monitor replication
+ Automatic failover detection with witness protection
+ Email notification
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+repmgr Architecture
+Replica - 1 Primary Replica - 2
+Streaming Replication Streaming Replication
+repmgr user and metadata
+repmgr
+repmgr repmgr
+repmgrd repmgrd repmgrd
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Module Summary
+ Data Replication
+ Data Replication in Postgres
+ Streaming Replication and Architecture
+ Synchronous, Asynchronous and
+Cascaded Replication
+ Setup Streaming Replication
+ Logical Replication Architecture
+ Replication Manager (repmgr)
+ High Availability Overview
+ Replication Server (xdb)
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Course Summary
+ Introduction and Architectural Overview  Database Security
+ System Architecture  Monitoring and Admin Tools Overview
+ Enterprise Postgres Installation  SQL Primer
+ User Tools - Command Line Interfaces  Backup and Recovery
+ Database Clusters  Routine Maintenance Tasks
+ Database Configuration  Data Loading
+ Data Dictionary  Data Replication and High Availability
+ Creating and Managing Database Objects
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Next Steps
+ Certify your Postgres skills with EDB Certifications for Postgres
+ Continue your skills development with the following classes:
+ Advanced EDB Postgres
+ EDB Postgres Distributed
+ EDB Postgres AI Platform Introduction
+ See the Training Portal for the full library of Postgres training classes
+ For any questions related to EDB Postgres Trainings and Certifications, or for additional
+information, write to:
+ training@enterprisedb.com
+© E DB 2 0 2 5 — A LL R I G HT S R E SE R V E D.
+
+Thank you!
+Please visit our Training Portal for
+more courses and workshops!
+©©©EEEDDDBBB 222000222555 ——— AAALLLLLL RRRIIIGGGHHHTTTSSS RRREEESSSEEERRRVVVEEEDDD...
+
